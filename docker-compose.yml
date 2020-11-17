@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo
+    container_name: podcastic_mongo
+    ports:
+      - '27017:27017'
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: podcastic_mq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
