@@ -22,7 +22,7 @@ setupDatabase().then(() => {
 
   // Handles celebrate validation errors
   app.use(errors());
-
+  // Handles application errors
   app.use(errorHandler);
 
   const port = process.env.PORT || 3333;

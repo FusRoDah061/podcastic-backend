@@ -1,6 +1,5 @@
 import { container } from 'tsyringe';
 import messagingConfig from '../../../config/messagingConfig';
-import AppError from '../../../shared/errors/AppError';
 import IMessagingConsumerProvider from '../../../shared/providers/MessagingConsumerProvider/models/IMessagingConsumerProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import RefreshPodcastFeedService from '../services/RefreshPodcastFeedService';
@@ -26,7 +25,13 @@ export default function setupPodcastsMessaging(): void {
 
       console.log('Message: ', messageContent);
 
-      await refreshPodcastService.execute(parsedMessage);
+      try {
+        await refreshPodcastService.execute(parsedMessage);
+      } catch (err) {
+        // We don't throw an error because we want the message to be consumed, otherwise it will always end up here.
+        // If it is a legit feed address, but it's temporarily unavailable, the user can add it again.
+        // The healthchek during the add podcast request should prevent this, though.
+      }
     },
   });
 }

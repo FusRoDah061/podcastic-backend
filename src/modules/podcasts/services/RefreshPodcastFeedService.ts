@@ -25,9 +25,7 @@ export default class RefreshPodcastFeedService {
         await this.feedHealthcheckProvider.ping(rss_url);
       } catch (err) {
         console.error('Error checking feed: ', err);
-        // We don't throw error because we want the message to be consumed, otherwise it will always end up here.
-        // If it is a legit feed address, but it's temporarily unavailable, the user can add it again.
-        // The healthchek during the add podcast request should prevent this, though.
+        throw new AppError(`Error checking feed ${rss_url}`);
       }
 
       console.log('Feed url is valid');
