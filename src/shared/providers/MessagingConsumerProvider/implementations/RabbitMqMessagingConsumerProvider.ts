@@ -5,13 +5,26 @@ import IMessagingConsumerProvider from '../models/IMessagingConsumerProvider';
 
 export default class RabbitMqMessagingConsumerProvider
   implements IMessagingConsumerProvider {
-  async consume({ queueName, callback }: IMessagingConsumeDTO): Promise<void> {
+  public async consume({
+    queueName,
+    callback,
+  }: IMessagingConsumeDTO): Promise<void> {
     const channel = await connect(
       messagingConfig.config.rabbit.url,
     ).then(conn => conn.createChannel());
 
     await channel.assertQueue(queueName, { durable: true });
 
-    channel.consume(queueName, callback);
+    await channel.consume(queueName, message => {
+      try {
+        callback(message);
+
+        if (message) {
+          channel.ack(message);
+        }
+      } catch (err) {
+        console.error('Error consuming message: ', err);
+      }
+    });
   }
 }

@@ -23,6 +23,7 @@
         "prettier"
     ],
     "rules": {
+      "no-console": "off",
       "no-restricted-syntax": "off",
       "no-useless-constructor": "off",
       "class-methods-use-this": "off",

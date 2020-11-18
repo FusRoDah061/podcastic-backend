@@ -1,4 +1,6 @@
 import { inject, injectable } from 'tsyringe';
+import AppError from '../../../shared/errors/AppError';
+import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 
@@ -7,6 +9,9 @@ export default class RefreshPodcastFeedService {
   constructor(
     @inject('PodcastRepository')
     private podcastsRepository: IPodcastRepository,
+
+    @inject('FeedHealthcheckProvider')
+    private feedHealthcheckProvider: IFeedHealthcheckProvider,
   ) {}
 
   public async execute({ rss_url }: IPodcastQueueMessage): Promise<void> {
@@ -16,7 +21,16 @@ export default class RefreshPodcastFeedService {
     if (!podcast) {
       console.log('Adding a new feed: ', rss_url);
 
-      // TODO: Buscar xml do feed para pegar as informações e verificar se existe (é válido)
+      try {
+        await this.feedHealthcheckProvider.ping(rss_url);
+      } catch (err) {
+        console.error('Error checking feed: ', err);
+        // We don't throw error because we want the message to be consumed, otherwise it will always end up here.
+        // If it is a legit feed address, but it's temporarily unavailable, the user can add it again.
+        // The healthchek during the add podcast request should prevent this, though.
+      }
+
+      console.log('Feed url is valid');
 
       await this.podcastsRepository.create({
         name: 'Teste',
