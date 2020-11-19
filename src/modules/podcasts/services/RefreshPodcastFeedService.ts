@@ -4,6 +4,7 @@ import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckP
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
+import {} from '../repositories/implementations/PodcastsRepository';
 
 @injectable()
 export default class RefreshPodcastFeedService {
@@ -18,32 +19,32 @@ export default class RefreshPodcastFeedService {
     private feedParserProvider: IFeedParserProvider,
   ) {}
 
-  public async execute({ rss_url }: IPodcastQueueMessage): Promise<void> {
-    console.log('Refresh feed ', rss_url);
-    const podcast = await this.podcastsRepository.findByRssUrl(rss_url);
+  public async execute({ rssUrl }: IPodcastQueueMessage): Promise<void> {
+    console.log('Refresh feed ', rssUrl);
+    let podcast = await this.podcastsRepository.findByFeedUrl(rssUrl);
 
     if (!podcast) {
-      console.log('Adding a new feed: ', rss_url);
+      console.log('Adding a new feed: ', rssUrl);
 
       try {
-        await this.feedHealthcheckProvider.ping(rss_url);
+        await this.feedHealthcheckProvider.ping(rssUrl);
       } catch (err) {
         console.error('Error checking feed: ', err);
-        throw new AppError(`Error checking feed ${rss_url}`);
+        throw new AppError(`Error checking feed ${rssUrl}`);
       }
 
       console.log('Feed url is valid');
 
-      const feed = await this.feedParserProvider.parse(rss_url);
+      const feed = await this.feedParserProvider.parse(rssUrl);
 
       console.log('Parsed feed');
 
-      await this.podcastsRepository.create({
+      podcast = await this.podcastsRepository.create({
         name: feed.name,
         description: feed.description,
-        image_url: feed.image,
-        rss_url: feed.xmlUrl,
-        website_url: feed.link,
+        imageUrl: feed.image,
+        feedUrl: feed.xmlUrl,
+        websiteUrl: feed.link,
       });
     }
 
