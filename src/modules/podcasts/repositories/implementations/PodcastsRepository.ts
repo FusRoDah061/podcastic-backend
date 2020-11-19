@@ -15,12 +15,14 @@ export default class PodcastRepository implements IPodcastRepository {
     description,
     image_url,
     rss_url,
+    website_url,
   }: ICreatePodcastDTO): Promise<Podcast> {
     const podcast = this.ormRepository.create({
       name,
       description,
       image_url,
       rss_url,
+      website_url,
     });
 
     await this.ormRepository.save(podcast);

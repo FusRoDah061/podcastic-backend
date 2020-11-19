@@ -1,3 +1,3 @@
 export default interface IFeedHealthcheckProvider {
-  ping(url: string): Promise<void>;
+  ping(feedUrl: string): Promise<void>;
 }

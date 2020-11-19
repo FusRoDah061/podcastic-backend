@@ -24,6 +24,9 @@ export default class Podcast {
   @Column()
   rss_url: string;
 
+  @Column()
+  website_url?: string;
+
   @CreateDateColumn()
   created_at: Date;
 

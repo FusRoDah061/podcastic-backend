@@ -4,9 +4,9 @@ import IFeedHealthcheckProvider from '../models/IFeedHealthcheckProvider';
 
 export default class AxiosFeedHealthcheckProvider
   implements IFeedHealthcheckProvider {
-  public async ping(url: string): Promise<void> {
+  public async ping(feedUrl: string): Promise<void> {
     try {
-      const response = await Axios.get(url, {
+      const response = await Axios.get(feedUrl, {
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36',

@@ -1,6 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
+import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 
@@ -12,6 +13,9 @@ export default class RefreshPodcastFeedService {
 
     @inject('FeedHealthcheckProvider')
     private feedHealthcheckProvider: IFeedHealthcheckProvider,
+
+    @inject('FeedParserProvider')
+    private feedParserProvider: IFeedParserProvider,
   ) {}
 
   public async execute({ rss_url }: IPodcastQueueMessage): Promise<void> {
@@ -30,12 +34,19 @@ export default class RefreshPodcastFeedService {
 
       console.log('Feed url is valid');
 
+      const feed = await this.feedParserProvider.parse(rss_url);
+
+      console.log('Parsed feed');
+
       await this.podcastsRepository.create({
-        name: 'Teste',
-        description: 'Teste',
-        image_url: 'https://via.placeholder.com/150',
-        rss_url,
+        name: feed.name,
+        description: feed.description,
+        image_url: feed.image,
+        rss_url: feed.xmlUrl,
+        website_url: feed.link,
       });
     }
+
+    console.log('Updating feed.');
   }
 }
