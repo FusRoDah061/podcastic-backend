@@ -1,9 +1,11 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
-import AddPodcastFeedController from '../controllers/AddPodcastFeedController';
+import PodcastController from '../controllers/PodcastController';
 
 const router = Router();
-const addPodcastController = new AddPodcastFeedController();
+const podcastController = new PodcastController();
+
+router.get('/', podcastController.index);
 
 router.post(
   '/',
@@ -12,7 +14,7 @@ router.post(
       rssUrl: Joi.string().uri().required(),
     },
   }),
-  addPodcastController.create,
+  podcastController.create,
 );
 
 export default router;

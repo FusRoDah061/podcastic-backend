@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
-import AddPodcastFeedService from '../services/AddPodcastFeedService';
+import AddPodcastService from '../services/AddPodcastService';
 
-export default class AddPodcastFeedController {
+export default class PodcastController {
   public async create(request: Request, response: Response): Promise<Response> {
     const { rssUrl } = request.body;
 
-    const addPodcastFeedService = container.resolve(AddPodcastFeedService);
+    const addPodcastService = container.resolve(AddPodcastService);
 
-    await addPodcastFeedService.execute({ rssUrl });
+    await addPodcastService.execute({ rssUrl });
 
     return response.status(204).send();
   }

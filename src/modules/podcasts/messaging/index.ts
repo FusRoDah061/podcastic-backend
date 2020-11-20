@@ -2,7 +2,7 @@ import { container } from 'tsyringe';
 import messagingConfig from '../../../config/messagingConfig';
 import IMessagingConsumerProvider from '../../../shared/providers/MessagingConsumerProvider/models/IMessagingConsumerProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
-import RefreshPodcastFeedService from '../services/RefreshPodcastFeedService';
+import RefreshPodcastService from '../services/RefreshPodcastService';
 
 export default function setupPodcastsMessaging(): void {
   const messagingConsumer = container.resolve<IMessagingConsumerProvider>(
@@ -16,9 +16,7 @@ export default function setupPodcastsMessaging(): void {
 
       console.log('Consuming message from podcasts queue.');
 
-      const refreshPodcastService = container.resolve(
-        RefreshPodcastFeedService,
-      );
+      const refreshPodcastService = container.resolve(RefreshPodcastService);
 
       const messageContent = message.content.toString();
       const parsedMessage = JSON.parse(messageContent) as IPodcastQueueMessage;

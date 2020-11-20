@@ -7,7 +7,7 @@ import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IEpisode } from '../schemas/Podcast';
 
 @injectable()
-export default class RefreshPodcastFeedService {
+export default class RefreshPodcastService {
   constructor(
     @inject('PodcastRepository')
     private podcastsRepository: IPodcastRepository,

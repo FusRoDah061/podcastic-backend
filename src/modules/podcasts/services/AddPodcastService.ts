@@ -8,7 +8,7 @@ import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 type IRequestDTO = Omit<IPodcastQueueMessage, 'id'>;
 
 @injectable()
-export default class AddPodcastFeedService {
+export default class AddPodcastService {
   constructor(
     @inject('MessagingSenderProvider')
     private messagingSenderProvider: IMessagingSenderProvider,
