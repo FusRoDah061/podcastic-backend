@@ -4,7 +4,7 @@ import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckP
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
-import {} from '../repositories/implementations/PodcastsRepository';
+import { IEpisode } from '../schemas/Podcast';
 
 @injectable()
 export default class RefreshPodcastFeedService {
@@ -21,23 +21,24 @@ export default class RefreshPodcastFeedService {
 
   public async execute({ rssUrl }: IPodcastQueueMessage): Promise<void> {
     console.log('Refresh feed ', rssUrl);
+
+    try {
+      await this.feedHealthcheckProvider.ping(rssUrl);
+    } catch (err) {
+      console.error('Error checking feed: ', err);
+      throw new AppError(`Error checking feed ${rssUrl}`);
+    }
+
+    console.log('Feed url is valid');
+
     let podcast = await this.podcastsRepository.findByFeedUrl(rssUrl);
 
+    console.log('Parsed feed');
+
+    const feed = await this.feedParserProvider.parse(rssUrl);
+
     if (!podcast) {
-      console.log('Adding a new feed: ', rssUrl);
-
-      try {
-        await this.feedHealthcheckProvider.ping(rssUrl);
-      } catch (err) {
-        console.error('Error checking feed: ', err);
-        throw new AppError(`Error checking feed ${rssUrl}`);
-      }
-
-      console.log('Feed url is valid');
-
-      const feed = await this.feedParserProvider.parse(rssUrl);
-
-      console.log('Parsed feed');
+      console.log('Adding a new podcast: ', rssUrl);
 
       podcast = await this.podcastsRepository.create({
         name: feed.name,
@@ -49,5 +50,52 @@ export default class RefreshPodcastFeedService {
     }
 
     console.log('Updating feed.');
+
+    if (podcast) {
+      const existingPodcast = podcast;
+
+      const newPodcastEpisodes: Array<IEpisode> = feed.items
+        .filter(feedItem => {
+          // Keep only feed items that have an audio file
+
+          const audioFile = feedItem.files.find(file => {
+            return file.mediaType?.startsWith('audio/');
+          });
+
+          return !!audioFile;
+        })
+        .filter(feedItem => {
+          // Keep only items that don't already exist
+
+          const episodeExists = existingPodcast.episodes.find(episode => {
+            return episode.title === feedItem.title;
+          });
+
+          return !episodeExists;
+        })
+        .map(feedItem => {
+          // Normalize output
+
+          const audioFiles = feedItem.files.filter(file => {
+            return file.mediaType?.startsWith('audio/');
+          });
+
+          return {
+            title: feedItem.title,
+            description: feedItem.description,
+            date: feedItem.date,
+            image: feedItem.image || existingPodcast.imageUrl,
+            file: audioFiles[0],
+          };
+        });
+
+      console.log(`Adding ${newPodcastEpisodes.length} new episodes`);
+
+      existingPodcast.episodes.push(...newPodcastEpisodes);
+
+      await existingPodcast.save();
+    }
+
+    console.log('Feed updated.');
   }
 }

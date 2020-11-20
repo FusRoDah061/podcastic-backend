@@ -20,7 +20,7 @@ const EpisodeFileSchema = new Schema(
   },
 );
 
-interface IEpisodeFile {
+export interface IEpisodeFile {
   url: string;
   mediaType: string | undefined;
   length: string | undefined;
@@ -50,7 +50,7 @@ const EpisodeSchema = new Schema(
   },
 );
 
-interface IEpisode {
+export interface IEpisode {
   title: string;
   description: string;
   date: Date | null;

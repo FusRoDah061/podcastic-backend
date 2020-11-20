@@ -17,9 +17,9 @@ export default class AddPodcastFeedService {
     private feedHealthcheckProvider: IFeedHealthcheckProvider,
   ) {}
 
-  public async execute({ rss_url }: IRequestDTO): Promise<void> {
+  public async execute({ rssUrl }: IRequestDTO): Promise<void> {
     try {
-      await this.feedHealthcheckProvider.ping(rss_url);
+      await this.feedHealthcheckProvider.ping(rssUrl);
     } catch (err) {
       console.error('Error checking feed: ', err);
       throw new AppError(
@@ -32,7 +32,7 @@ export default class AddPodcastFeedService {
     await this.messagingSenderProvider.post({
       queueName: messagingConfig.queueNames.podcasts,
       message: {
-        rss_url,
+        rssUrl,
       },
     });
   }

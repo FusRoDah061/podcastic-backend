@@ -3,10 +3,9 @@ import FeedParser from 'feedparser';
 import { ReadStream } from 'fs';
 import { promisify } from 'util';
 import AppError from '../../../errors/AppError';
-import IFeedParserProvider, {
-  IFeed,
-  IFeedItem,
-} from '../models/IFeedParserProvider';
+import IFeed from '../dtos/IFeed';
+import IFeedItem from '../dtos/IFeedItem';
+import IFeedParserProvider from '../models/IFeedParserProvider';
 
 export type Callback<T> = (err: Error | null, result: T) => void;
 
@@ -70,11 +69,13 @@ export default class FeedParserProvider implements IFeedParserProvider {
                   author: feedItem.author,
                   guid: feedItem.guid,
                   link: feedItem.link || feedItem.origlink,
-                  file: {
-                    url: feedItem.enclosures[0].url,
-                    mediaType: feedItem.enclosures[0].type,
-                    length: feedItem.enclosures[0].length,
-                  },
+                  files: feedItem.enclosures.map(enclosure => {
+                    return {
+                      url: enclosure.url,
+                      mediaType: enclosure.type,
+                      length: enclosure.length,
+                    };
+                  }),
                 };
 
                 feedContent.items.push(item);

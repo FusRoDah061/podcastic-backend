@@ -6,9 +6,9 @@ export default interface IFeedItem {
   guid?: string;
   author?: string;
   image: string;
-  file: {
+  files: Array<{
     url: string;
     mediaType: string | undefined;
     length: string | undefined;
-  };
+  }>;
 }

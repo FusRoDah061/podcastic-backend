@@ -1,5 +1,8 @@
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
-import PodcastModel, { IPodcast } from '../../schemas/Podcast';
+import PodcastModel, {
+  IPodcast,
+  IPodcastDocument,
+} from '../../schemas/Podcast';
 import IPodcastRepository from '../IPodcastsRepository';
 
 export default class PodcastRepository implements IPodcastRepository {
@@ -9,7 +12,7 @@ export default class PodcastRepository implements IPodcastRepository {
     imageUrl,
     feedUrl,
     websiteUrl,
-  }: ICreatePodcastDTO): Promise<IPodcast> {
+  }: ICreatePodcastDTO): Promise<IPodcastDocument> {
     const podcastDefinition: IPodcast = {
       name,
       description,
@@ -24,7 +27,9 @@ export default class PodcastRepository implements IPodcastRepository {
     return podcast;
   }
 
-  public async findByFeedUrl(feedUrl: string): Promise<IPodcast | null> {
+  public async findByFeedUrl(
+    feedUrl: string,
+  ): Promise<IPodcastDocument | null> {
     const podcast = await PodcastModel.findOne({
       feedUrl,
     });
