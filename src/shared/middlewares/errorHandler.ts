@@ -11,13 +11,15 @@ export default function errorHandler(
 
   if (err instanceof AppError) {
     return response.status(err.statusCode).json({
-      status: 'error',
+      statusCode: err.statusCode,
+      error: err.error,
       message: err.message,
     });
   }
 
   return response.status(500).json({
-    status: 'error',
-    message: 'Internal server error',
+    status: 500,
+    error: 'Internal server error',
+    message: 'An unexpected error ocurred while processing the request.',
   });
 }

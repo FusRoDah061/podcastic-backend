@@ -1,6 +1,7 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import AllPodcastsController from '../controllers/AllPodcastsController';
+import EpisodesController from '../controllers/EpisodesController';
 import RecentPodcastsController from '../controllers/RecentPodcastsController';
 import SearchPodcastsController from '../controllers/SearchPodcastsController';
 
@@ -8,10 +9,37 @@ const router = Router();
 const allPodcastsController = new AllPodcastsController();
 const searchPodcastsController = new SearchPodcastsController();
 const recentPodcastsController = new RecentPodcastsController();
+const episodesController = new EpisodesController();
 
 router.get('/', allPodcastsController.index);
-router.get('/search', searchPodcastsController.list);
 router.get('/recent', recentPodcastsController.index);
+
+router.get(
+  '/search',
+  celebrate({
+    [Segments.QUERY]: {
+      q: Joi.string().required(),
+    },
+  }),
+  searchPodcastsController.list,
+);
+
+router.get(
+  '/:podcastId/episodes',
+  celebrate({
+    [Segments.PARAMS]: {
+      podcastId: Joi.string().required(),
+    },
+    [Segments.QUERY]: {
+      sort: Joi.string()
+        .valid('newest', 'oldest', 'longest', 'shortest')
+        .empty('')
+        .default('newest'),
+      q: Joi.string().optional().allow(''),
+    },
+  }),
+  episodesController.index,
+);
 
 router.post(
   '/',

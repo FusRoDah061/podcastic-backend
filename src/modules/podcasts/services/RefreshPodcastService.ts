@@ -76,16 +76,20 @@ export default class RefreshPodcastService {
         .map(feedItem => {
           // Normalize output
 
-          const audioFiles = feedItem.files.filter(file => {
+          const audioFile = feedItem.files.filter(file => {
             return file.mediaType?.startsWith('audio/');
-          });
+          })[0];
 
           return {
             title: feedItem.title,
             description: feedItem.description,
-            date: feedItem.date,
+            date: feedItem.date || new Date(),
             image: feedItem.image || existingPodcast.imageUrl,
-            file: audioFiles[0],
+            file: {
+              url: audioFile.url,
+              length: Number(audioFile.length),
+              mediaType: audioFile.mediaType || 'audio/mpeg',
+            },
           };
         });
 

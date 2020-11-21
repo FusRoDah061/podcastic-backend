@@ -1,4 +1,4 @@
-import { Document, Model, model, Schema, Types } from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
 
 const EpisodeFileSchema = new Schema(
   {
@@ -22,8 +22,8 @@ const EpisodeFileSchema = new Schema(
 
 export interface IEpisodeFile {
   url: string;
-  mediaType: string | undefined;
-  length: string | undefined;
+  mediaType: string;
+  length: number;
 }
 
 const EpisodeSchema = new Schema(
@@ -54,7 +54,7 @@ export interface IEpisode {
   _id?: any;
   title: string;
   description: string;
-  date: Date | null;
+  date: Date;
   image: string;
   file: IEpisodeFile;
   createdAt?: Date;
@@ -113,9 +113,7 @@ interface IPodcastBaseDocument extends IPodcast {
   _id: any;
 }
 
-export interface IPodcastDocument extends IPodcastBaseDocument, Document {
-  episodes: Types.Array<IEpisodeDocument>;
-}
+export interface IPodcastDocument extends IPodcastBaseDocument, Document {}
 
 export type IPodcastModel = Model<IPodcastDocument>;
 

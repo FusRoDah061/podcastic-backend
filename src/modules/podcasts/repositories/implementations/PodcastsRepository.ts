@@ -1,8 +1,10 @@
-import { addDays } from 'date-fns';
+import { addDays, compareDesc, compareAsc } from 'date-fns';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
+import IFindWithEspisodesDTO from '../../dtos/IFindWithEspisodesDTO';
 import IFromLastDaysPodcastDTO from '../../dtos/IFromLastDaysPodcastDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
 import PodcastModel, {
+  IEpisode,
   IPodcast,
   IPodcastDocument,
 } from '../../schemas/Podcast';
@@ -106,5 +108,53 @@ export default class PodcastRepository implements IPodcastRepository {
     });
 
     return podcasts;
+  }
+
+  public async findWithEpisodes({
+    podcastId,
+    sort,
+    episodeNameToSearch,
+  }: IFindWithEspisodesDTO): Promise<IPodcastDocument | null> {
+    let sortFunction: (a: IEpisode, b: IEpisode) => number;
+
+    switch (sort) {
+      case 'oldest':
+        sortFunction = (a: IEpisode, b: IEpisode) => {
+          return compareAsc(a.date, b.date);
+        };
+        break;
+      case 'longest':
+        sortFunction = (a: IEpisode, b: IEpisode) => {
+          return b.file.length - a.file.length;
+        };
+        break;
+      case 'shortest':
+        sortFunction = (a: IEpisode, b: IEpisode) => {
+          return a.file.length - b.file.length;
+        };
+        break;
+      default:
+        sortFunction = (a: IEpisode, b: IEpisode) => {
+          return compareDesc(a.date, b.date);
+        };
+    }
+
+    const podcast = await PodcastModel.findById(podcastId);
+
+    if (podcast) {
+      const filteredEpisodes = !episodeNameToSearch
+        ? podcast.episodes
+        : podcast.episodes.filter(episode => {
+            return episode.title
+              .toLocaleLowerCase()
+              .includes(episodeNameToSearch.toLocaleLowerCase());
+          });
+
+      filteredEpisodes.sort(sortFunction);
+
+      podcast.episodes = filteredEpisodes;
+    }
+
+    return podcast;
   }
 }
