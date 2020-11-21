@@ -1,3 +1,3 @@
 export default interface IPodcastQueueMessage {
-  rssUrl: string;
+  feedUrl: string;
 }

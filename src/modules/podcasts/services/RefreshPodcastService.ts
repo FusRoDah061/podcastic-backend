@@ -1,5 +1,4 @@
 import { inject, injectable } from 'tsyringe';
-import AppError from '../../../shared/errors/AppError';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
@@ -19,26 +18,26 @@ export default class RefreshPodcastService {
     private feedParserProvider: IFeedParserProvider,
   ) {}
 
-  public async execute({ rssUrl }: IPodcastQueueMessage): Promise<void> {
-    console.log('Refresh feed ', rssUrl);
+  public async execute({ feedUrl }: IPodcastQueueMessage): Promise<void> {
+    console.log('Refresh feed ', feedUrl);
 
     try {
-      await this.feedHealthcheckProvider.ping(rssUrl);
+      await this.feedHealthcheckProvider.ping(feedUrl);
     } catch (err) {
-      console.error('Error checking feed: ', err);
-      throw new AppError(`Error checking feed ${rssUrl}`);
+      console.error(`Error checking feed ${feedUrl}: `, err);
+      throw new Error(`Error checking feed ${feedUrl}`);
     }
 
     console.log('Feed url is valid');
 
-    let podcast = await this.podcastsRepository.findByFeedUrl(rssUrl);
+    let podcast = await this.podcastsRepository.findByFeedUrl(feedUrl);
 
     console.log('Parsed feed');
 
-    const feed = await this.feedParserProvider.parse(rssUrl);
+    const feed = await this.feedParserProvider.parse(feedUrl);
 
     if (!podcast) {
-      console.log('Adding a new podcast: ', rssUrl);
+      console.log('Adding a new podcast: ', feedUrl);
 
       podcast = await this.podcastsRepository.create({
         name: feed.name,

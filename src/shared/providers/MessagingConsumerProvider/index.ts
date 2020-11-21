@@ -3,11 +3,13 @@ import RabbitMqMessagingConsumerProvider from './implementations/RabbitMqMessagi
 import IMessagingConsumerProvider from './models/IMessagingConsumerProvider';
 import messaginConfig from '../../../config/messagingConfig';
 
-const providers = {
-  rabbit: RabbitMqMessagingConsumerProvider,
-};
+export default function setupMessagingConsumerProviderInjection(): void {
+  const providers = {
+    rabbit: RabbitMqMessagingConsumerProvider,
+  };
 
-container.registerSingleton<IMessagingConsumerProvider>(
-  'MessagingConsumerProvider',
-  providers[messaginConfig.driver],
-);
+  container.registerSingleton<IMessagingConsumerProvider>(
+    'MessagingConsumerProvider',
+    providers[messaginConfig.driver],
+  );
+}

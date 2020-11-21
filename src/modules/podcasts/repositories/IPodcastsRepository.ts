@@ -6,6 +6,7 @@ import { IPodcastDocument } from '../schemas/Podcast';
 
 export default interface IPodcastRepository {
   create(data: ICreatePodcastDTO): Promise<IPodcastDocument>;
+  findAll(): Promise<Array<IPodcastDocument>>;
   findByFeedUrl(feedUrl: string): Promise<IPodcastDocument | null>;
   findAllWithoutEpisodes(): Promise<Array<IPodcastDocument>>;
   searchAllByName(data: ISearchPodcastDTO): Promise<Array<IPodcastDocument>>;

@@ -15,10 +15,10 @@ export default class AxiosFeedHealthcheckProvider
       });
 
       if (response.status !== 200) {
-        throw new AppError('Bad status code');
+        throw new AppError(`Bad status code for ${feedUrl}`);
       }
     } catch (err) {
-      throw new AppError("Couldn't reach feed");
+      throw new AppError(`Couldn't reach feed ${feedUrl}`);
     }
   }
 }

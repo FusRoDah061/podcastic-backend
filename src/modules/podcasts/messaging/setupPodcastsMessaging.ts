@@ -5,6 +5,8 @@ import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import RefreshPodcastService from '../services/RefreshPodcastService';
 
 export default function setupPodcastsMessaging(): void {
+  console.log('Setting up podcasts queue consumer...');
+
   const messagingConsumer = container.resolve<IMessagingConsumerProvider>(
     'MessagingConsumerProvider',
   );
@@ -32,4 +34,6 @@ export default function setupPodcastsMessaging(): void {
       }
     },
   });
+
+  console.log('Podcasts queue consumer started.');
 }

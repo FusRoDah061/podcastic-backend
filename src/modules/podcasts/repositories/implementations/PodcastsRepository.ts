@@ -32,6 +32,11 @@ export default class PodcastRepository implements IPodcastRepository {
     return podcast;
   }
 
+  public async findAll(): Promise<Array<IPodcastDocument>> {
+    const podcasts = await PodcastModel.find();
+    return podcasts;
+  }
+
   public async findByFeedUrl(
     feedUrl: string,
   ): Promise<IPodcastDocument | null> {
