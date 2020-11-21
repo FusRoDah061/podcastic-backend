@@ -6,6 +6,7 @@ const router = Router();
 const podcastController = new PodcastController();
 
 router.get('/', podcastController.index);
+router.get('/search', podcastController.list);
 
 router.post(
   '/',

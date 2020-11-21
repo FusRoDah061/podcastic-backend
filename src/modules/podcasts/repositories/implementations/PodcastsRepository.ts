@@ -1,4 +1,5 @@
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
+import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
 import PodcastModel, {
   IPodcast,
   IPodcastDocument,
@@ -35,5 +36,31 @@ export default class PodcastRepository implements IPodcastRepository {
     });
 
     return podcast;
+  }
+
+  public async findAllWithoutEpisodes(): Promise<IPodcastDocument[]> {
+    const podcasts = await PodcastModel.find({}, [
+      '_id',
+      'name',
+      'description',
+      'imageUrl',
+      'feedUrl',
+      'websiteUrl',
+    ]);
+
+    return podcasts;
+  }
+
+  public async searchAllByName({
+    nameToSearch,
+  }: ISearchPodcastDTO): Promise<IPodcastDocument[]> {
+    const podcasts = await PodcastModel.find(
+      {
+        name: new RegExp(`${nameToSearch}`, 'i'),
+      },
+      ['_id', 'name', 'description', 'imageUrl', 'feedUrl', 'websiteUrl'],
+    );
+
+    return podcasts;
   }
 }

@@ -51,6 +51,7 @@ const EpisodeSchema = new Schema(
 );
 
 export interface IEpisode {
+  _id?: any;
   title: string;
   description: string;
   date: Date | null;
@@ -58,7 +59,11 @@ export interface IEpisode {
   file: IEpisodeFile;
 }
 
-export interface IEpisodeDocument extends IEpisode, Document {}
+interface IEpisodeBaseDocument extends IEpisode {
+  _id: any;
+}
+
+export interface IEpisodeDocument extends IEpisodeBaseDocument, Document {}
 
 const PodcastSchema = new Schema(
   {
@@ -91,6 +96,7 @@ const PodcastSchema = new Schema(
 );
 
 export interface IPodcast {
+  _id?: any;
   name: string;
   description: string;
   imageUrl: string;
@@ -99,7 +105,11 @@ export interface IPodcast {
   episodes: Array<IEpisode>;
 }
 
-export interface IPodcastDocument extends IPodcast, Document {
+interface IPodcastBaseDocument extends IPodcast {
+  _id: any;
+}
+
+export interface IPodcastDocument extends IPodcastBaseDocument, Document {
   episodes: Types.Array<IEpisodeDocument>;
 }
 
