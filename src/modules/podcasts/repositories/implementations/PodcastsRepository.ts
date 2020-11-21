@@ -1,4 +1,6 @@
+import { addDays } from 'date-fns';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
+import IFromLastDaysPodcastDTO from '../../dtos/IFromLastDaysPodcastDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
 import PodcastModel, {
   IPodcast,
@@ -46,7 +48,11 @@ export default class PodcastRepository implements IPodcastRepository {
       'imageUrl',
       'feedUrl',
       'websiteUrl',
-    ]);
+      'createdAt',
+      'updatedAt',
+    ]).sort({
+      name: 1,
+    });
 
     return podcasts;
   }
@@ -58,8 +64,46 @@ export default class PodcastRepository implements IPodcastRepository {
       {
         name: new RegExp(`${nameToSearch}`, 'i'),
       },
-      ['_id', 'name', 'description', 'imageUrl', 'feedUrl', 'websiteUrl'],
-    );
+      [
+        '_id',
+        'name',
+        'description',
+        'imageUrl',
+        'feedUrl',
+        'websiteUrl',
+        'createdAt',
+        'updatedAt',
+      ],
+    ).sort({
+      name: 1,
+    });
+
+    return podcasts;
+  }
+
+  public async findFromLastXDays({
+    daysOld,
+  }: IFromLastDaysPodcastDTO): Promise<IPodcastDocument[]> {
+    const now = new Date();
+    const pastDate = addDays(now, daysOld * -1);
+
+    const podcasts = await PodcastModel.find(
+      {
+        createdAt: { $gt: pastDate, $lt: now },
+      },
+      [
+        '_id',
+        'name',
+        'description',
+        'imageUrl',
+        'feedUrl',
+        'websiteUrl',
+        'createdAt',
+        'updatedAt',
+      ],
+    ).sort({
+      createdAt: -1,
+    });
 
     return podcasts;
   }

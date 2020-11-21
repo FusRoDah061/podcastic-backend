@@ -57,6 +57,8 @@ export interface IEpisode {
   date: Date | null;
   image: string;
   file: IEpisodeFile;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface IEpisodeBaseDocument extends IEpisode {
@@ -103,6 +105,8 @@ export interface IPodcast {
   feedUrl: string;
   websiteUrl?: string;
   episodes: Array<IEpisode>;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface IPodcastBaseDocument extends IPodcast {

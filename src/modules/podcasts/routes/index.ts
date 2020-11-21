@@ -1,12 +1,17 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
-import PodcastController from '../controllers/PodcastController';
+import AllPodcastsController from '../controllers/AllPodcastsController';
+import RecentPodcastsController from '../controllers/RecentPodcastsController';
+import SearchPodcastsController from '../controllers/SearchPodcastsController';
 
 const router = Router();
-const podcastController = new PodcastController();
+const allPodcastsController = new AllPodcastsController();
+const searchPodcastsController = new SearchPodcastsController();
+const recentPodcastsController = new RecentPodcastsController();
 
-router.get('/', podcastController.index);
-router.get('/search', podcastController.list);
+router.get('/', allPodcastsController.index);
+router.get('/search', searchPodcastsController.list);
+router.get('/recent', recentPodcastsController.index);
 
 router.post(
   '/',
@@ -15,7 +20,7 @@ router.post(
       rssUrl: Joi.string().uri().required(),
     },
   }),
-  podcastController.create,
+  allPodcastsController.create,
 );
 
 export default router;
