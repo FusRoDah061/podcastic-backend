@@ -2,6 +2,7 @@ import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import AllPodcastsController from '../controllers/AllPodcastsController';
 import EpisodesController from '../controllers/EpisodesController';
+import RandomEpisodeController from '../controllers/RandomEpisodeController';
 import RecentPodcastsController from '../controllers/RecentPodcastsController';
 import SearchPodcastsController from '../controllers/SearchPodcastsController';
 
@@ -10,6 +11,7 @@ const allPodcastsController = new AllPodcastsController();
 const searchPodcastsController = new SearchPodcastsController();
 const recentPodcastsController = new RecentPodcastsController();
 const episodesController = new EpisodesController();
+const randomEpisodeController = new RandomEpisodeController();
 
 router.get('/', allPodcastsController.index);
 router.get('/recent', recentPodcastsController.index);
@@ -39,6 +41,16 @@ router.get(
     },
   }),
   episodesController.index,
+);
+
+router.get(
+  '/:podcastId/episodes/random',
+  celebrate({
+    [Segments.PARAMS]: {
+      podcastId: Joi.string().required(),
+    },
+  }),
+  randomEpisodeController.index,
 );
 
 router.post(

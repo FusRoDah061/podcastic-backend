@@ -1,5 +1,6 @@
 import { addDays, compareDesc, compareAsc } from 'date-fns';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
+import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
 import IFindWithEspisodesDTO from '../../dtos/IFindWithEspisodesDTO';
 import IFromLastDaysPodcastDTO from '../../dtos/IFromLastDaysPodcastDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
@@ -160,6 +161,13 @@ export default class PodcastRepository implements IPodcastRepository {
       podcast.episodes = filteredEpisodes;
     }
 
+    return podcast;
+  }
+
+  public async findById({
+    podcastId,
+  }: IFindPodcastByIdDTO): Promise<IPodcastDocument | null> {
+    const podcast = await PodcastModel.findById(podcastId);
     return podcast;
   }
 }

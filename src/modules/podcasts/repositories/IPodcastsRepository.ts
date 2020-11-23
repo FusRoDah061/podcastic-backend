@@ -1,4 +1,5 @@
 import ICreatePodcastDTO from '../dtos/ICreatePodcastDTO';
+import IFindPodcastByIdDTO from '../dtos/IFindPodcastByIdDTO';
 import IFindWithEspisodesDTO from '../dtos/IFindWithEspisodesDTO';
 import IFromLastDaysPodcastDTO from '../dtos/IFromLastDaysPodcastDTO';
 import ISearchPodcastDTO from '../dtos/ISearchPodcastDTO';
@@ -16,4 +17,5 @@ export default interface IPodcastRepository {
   findWithEpisodes(
     data: IFindWithEspisodesDTO,
   ): Promise<IPodcastDocument | null>;
+  findById(data: IFindPodcastByIdDTO): Promise<IPodcastDocument | null>;
 }
