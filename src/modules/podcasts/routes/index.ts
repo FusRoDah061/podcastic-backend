@@ -57,7 +57,7 @@ router.post(
   '/',
   celebrate({
     [Segments.BODY]: {
-      rssUrl: Joi.string().uri().required(),
+      feedUrl: Joi.string().uri().required(),
     },
   }),
   allPodcastsController.create,

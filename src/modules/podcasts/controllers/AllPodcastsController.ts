@@ -13,11 +13,11 @@ export default class AllPodcastsController {
   }
 
   public async create(request: Request, response: Response): Promise<Response> {
-    const { rssUrl } = request.body;
+    const { feedUrl } = request.body;
 
     const addPodcastService = container.resolve(AddPodcastService);
 
-    await addPodcastService.execute({ rssUrl });
+    await addPodcastService.execute({ feedUrl });
 
     return response.status(204).send();
   }
