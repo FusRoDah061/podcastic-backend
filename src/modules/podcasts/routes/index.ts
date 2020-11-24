@@ -27,7 +27,7 @@ router.get(
 );
 
 router.get(
-  '/:podcastId/episodes',
+  '/:podcastId',
   celebrate({
     [Segments.PARAMS]: {
       podcastId: Joi.string().required(),
