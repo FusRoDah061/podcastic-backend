@@ -10,10 +10,6 @@ const EpisodeFileSchema = new Schema(
       type: String,
       required: true,
     },
-    length: {
-      type: String,
-      required: true,
-    },
   },
   {
     _id: false,
@@ -23,7 +19,6 @@ const EpisodeFileSchema = new Schema(
 export interface IEpisodeFile {
   url: string;
   mediaType: string;
-  length: number;
 }
 
 const EpisodeSchema = new Schema(
@@ -43,6 +38,10 @@ const EpisodeSchema = new Schema(
       type: String,
       required: true,
     },
+    duration: {
+      type: String,
+      required: true,
+    },
     file: EpisodeFileSchema,
   },
   {
@@ -56,6 +55,7 @@ export interface IEpisode {
   description: string;
   date: Date;
   image: string;
+  duration: string;
   file: IEpisodeFile;
   createdAt?: Date;
   updatedAt?: Date;

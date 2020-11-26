@@ -1,6 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
+import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IEpisode } from '../schemas/Podcast';
@@ -79,14 +80,21 @@ export default class RefreshPodcastService {
             return file.mediaType?.startsWith('audio/');
           })[0];
 
+          // Prefer itunes duration since it might be more precise and already formatted
+          let audioDuration = feedItem.itunesDuration;
+
+          if (audioDuration && !audioDuration.includes(':')) {
+            audioDuration = formatDuration(Number(audioDuration) * 1000);
+          }
+
           return {
             title: feedItem.title,
             description: feedItem.description,
             date: feedItem.date || new Date(),
             image: feedItem.image || existingPodcast.imageUrl,
+            duration: audioDuration as string,
             file: {
               url: audioFile.url,
-              length: Number(audioFile.length),
               mediaType: audioFile.mediaType || 'audio/mpeg',
             },
           };

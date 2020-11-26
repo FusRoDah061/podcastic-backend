@@ -5,6 +5,7 @@ export default interface IFeedItem {
   link?: string;
   guid?: string;
   author?: string;
+  itunesDuration?: string;
   image: string;
   files: Array<{
     url: string;

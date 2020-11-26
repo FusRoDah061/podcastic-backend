@@ -1,6 +1,8 @@
 import mongoose, { ConnectionOptions } from 'mongoose';
 
 export default function setupDatabase(): Promise<typeof mongoose> {
+  console.log('Setting up database connection...');
+
   const options: ConnectionOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true,

@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import FeedParser from 'feedparser';
+import FeedParser, { Item } from 'feedparser';
 import { ReadStream } from 'fs';
 import { promisify } from 'util';
 import AppError from '../../../errors/AppError';
@@ -8,6 +8,10 @@ import IFeedItem from '../dtos/IFeedItem';
 import IFeedParserProvider from '../models/IFeedParserProvider';
 
 export type Callback<T> = (err: Error | null, result: T) => void;
+
+interface IFeedParserItem extends Item {
+  [propName: string]: any;
+}
 
 export default class FeedParserProvider implements IFeedParserProvider {
   public async parse(feedUrl: string): Promise<IFeed> {
@@ -41,7 +45,7 @@ export default class FeedParserProvider implements IFeedParserProvider {
           });
 
           parser.on('readable', () => {
-            let feedItem = parser.read();
+            let feedItem = parser.read() as IFeedParserItem;
 
             if (!feedContent) {
               feedContent = {
@@ -69,6 +73,7 @@ export default class FeedParserProvider implements IFeedParserProvider {
                   author: feedItem.author,
                   guid: feedItem.guid,
                   link: feedItem.link || feedItem.origlink,
+                  itunesDuration: feedItem['itunes:duration']['#'],
                   files: feedItem.enclosures.map(enclosure => {
                     return {
                       url: enclosure.url,
