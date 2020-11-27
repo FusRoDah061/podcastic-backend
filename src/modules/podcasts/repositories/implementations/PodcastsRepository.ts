@@ -131,12 +131,24 @@ export default class PodcastRepository implements IPodcastRepository {
         break;
       case 'longest':
         sortFunction = (a: IEpisode, b: IEpisode) => {
-          return b.file.length - a.file.length;
+          if (b.duration === a.duration) return 0;
+
+          if (a.duration > b.duration) {
+            return -1;
+          }
+
+          return 1;
         };
         break;
       case 'shortest':
         sortFunction = (a: IEpisode, b: IEpisode) => {
-          return a.file.length - b.file.length;
+          if (b.duration === a.duration) return 0;
+
+          if (b.duration > a.duration) {
+            return -1;
+          }
+
+          return 1;
         };
         break;
       default:
