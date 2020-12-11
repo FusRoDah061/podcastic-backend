@@ -15,12 +15,14 @@ export default class RabbitMqMessagingSenderProvider
       throw new Error(`Invalid queue name ${queueName}`);
     }
 
-    const channel = await connect(
-      messagingConfig.config.rabbit.url,
-    ).then(conn => conn.createChannel());
+    const connection = await connect(messagingConfig.config.rabbit.url);
+    const channel = await connection.createChannel();
 
     console.log('Posting o queue ', queueName);
 
     await channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
+
+    await channel.close();
+    await connection.close();
   }
 }
