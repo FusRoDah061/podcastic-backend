@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
+import translate from '../../../shared/utils/translate';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IPodcast } from '../schemas/Podcast';
 
@@ -16,11 +17,10 @@ export default class ListEpisodesService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute({
-    podcastId,
-    sort,
-    episodeNameToSearch,
-  }: IRequestDTO): Promise<IPodcast> {
+  public async execute(
+    { podcastId, sort, episodeNameToSearch }: IRequestDTO,
+    locale: string,
+  ): Promise<IPodcast> {
     const podcast = await this.podcastRepository.findWithEpisodes({
       podcastId,
       sort,
@@ -28,7 +28,7 @@ export default class ListEpisodesService {
     });
 
     if (!podcast) {
-      throw new AppError('Podcast does not exist.');
+      throw new AppError(translate('Podcast does not exist.', locale));
     }
 
     return podcast;

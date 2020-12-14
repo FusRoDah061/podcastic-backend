@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
+import translate from '../../../shared/utils/translate';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IEpisode } from '../schemas/Podcast';
 
@@ -14,13 +15,16 @@ export default class RandomEpisodeService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute({ podcastId }: IRequestDTO): Promise<IEpisode> {
+  public async execute(
+    { podcastId }: IRequestDTO,
+    locale: string,
+  ): Promise<IEpisode> {
     const podcast = await this.podcastRepository.findById({
       podcastId,
     });
 
     if (!podcast) {
-      throw new AppError('Podcast does not exist.');
+      throw new AppError(translate('Podcast does not exist.', locale));
     }
 
     const randomIndex = Math.floor(Math.random() * podcast.episodes.length);

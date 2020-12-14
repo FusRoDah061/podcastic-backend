@@ -14,10 +14,11 @@ export default class AllPodcastsController {
 
   public async create(request: Request, response: Response): Promise<Response> {
     const { feedUrl } = request.body;
+    const { locale } = response;
 
     const addPodcastService = container.resolve(AddPodcastService);
 
-    await addPodcastService.execute({ feedUrl });
+    await addPodcastService.execute({ feedUrl }, locale);
 
     return response.status(204).send();
   }

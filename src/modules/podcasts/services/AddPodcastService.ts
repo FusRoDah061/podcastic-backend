@@ -3,6 +3,7 @@ import messagingConfig from '../../../config/messagingConfig';
 import AppError from '../../../shared/errors/AppError';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
 import IMessagingSenderProvider from '../../../shared/providers/MessagingSenderProvider/models/IMessagingSenderProvider';
+import translate from '../../../shared/utils/translate';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 
 type IRequestDTO = Omit<IPodcastQueueMessage, 'id'>;
@@ -17,13 +18,19 @@ export default class AddPodcastService {
     private feedHealthcheckProvider: IFeedHealthcheckProvider,
   ) {}
 
-  public async execute({ feedUrl }: IRequestDTO): Promise<void> {
+  public async execute(
+    { feedUrl }: IRequestDTO,
+    locale: string,
+  ): Promise<void> {
     try {
       await this.feedHealthcheckProvider.ping(feedUrl);
     } catch (err) {
       console.error('Error checking feed: ', err);
       throw new AppError(
-        "Couldn't reach feed. Check if the URL is correct or try again later.",
+        translate(
+          "Couldn't reach feed. Check if the URL is correct or try again later.",
+          locale,
+        ),
       );
     }
 

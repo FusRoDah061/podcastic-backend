@@ -1,4 +1,6 @@
 import { inject, injectable } from 'tsyringe';
+import AppError from '../../../shared/errors/AppError';
+import translate from '../../../shared/utils/translate';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IPodcast } from '../schemas/Podcast';
 
@@ -13,9 +15,14 @@ export default class SearchPodcastService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute({
-    nameToSearch,
-  }: IRequestDTO): Promise<Array<IPodcast>> {
+  public async execute(
+    { nameToSearch }: IRequestDTO,
+    locale: string,
+  ): Promise<Array<IPodcast>> {
+    if (!nameToSearch || !nameToSearch.trim()) {
+      throw new AppError(translate('Search text must not be blank.', locale));
+    }
+
     const podcasts = await this.podcastRepository.searchAllByName({
       nameToSearch,
     });

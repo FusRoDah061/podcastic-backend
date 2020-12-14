@@ -54,6 +54,14 @@
         {
           "argsIgnorePattern": "_"
         }
+      ],
+      "no-underscore-dangle": [
+        "error",
+        {
+          "allow": [
+            "__"
+          ]
+        }
       ]
     },
     "settings": {
