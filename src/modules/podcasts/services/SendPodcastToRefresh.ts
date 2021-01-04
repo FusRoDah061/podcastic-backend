@@ -28,6 +28,8 @@ export default class SendPodcastToRefresh {
       );
     });
 
+    console.log(`Sending ${podcasts.length} podcasts to be refreshed.`);
+
     await Promise.all(postPromises);
   }
 }

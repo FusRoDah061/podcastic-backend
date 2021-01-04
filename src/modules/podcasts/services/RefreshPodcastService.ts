@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
+import IFeed from '../../../shared/providers/FeedParserProvider/dtos/IFeed';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
@@ -22,23 +23,42 @@ export default class RefreshPodcastService {
   public async execute({ feedUrl }: IPodcastQueueMessage): Promise<void> {
     console.log('Refresh feed ', feedUrl);
 
+    let podcast = await this.podcastsRepository.findByFeedUrl(feedUrl);
+    const LOG_TAG = `[${podcast?.name || feedUrl.substring(0, 20)}]: `;
+
     try {
       await this.feedHealthcheckProvider.ping(feedUrl);
+      console.log(LOG_TAG, 'Feed url is valid');
     } catch (err) {
-      console.error(`Error checking feed ${feedUrl}: `, err);
-      throw new Error(`Error checking feed ${feedUrl}`);
+      console.error(LOG_TAG, `Error checking feed ${feedUrl}: `, err);
+
+      if (podcast) {
+        console.log(LOG_TAG, 'Podcast exists but the feed is down.');
+
+        await podcast.updateOne({
+          isServiceAvailable: false,
+        });
+
+        await podcast.save();
+      } else {
+        // If the podcast doesn't exist, we throw an error so that the message consumption is rolled back to be reprocessed later
+        throw new Error(`Error checking feed ${feedUrl}`);
+      }
     }
 
-    console.log('Feed url is valid');
+    console.log(LOG_TAG, 'Parsing feed');
 
-    let podcast = await this.podcastsRepository.findByFeedUrl(feedUrl);
+    let feed: IFeed;
 
-    console.log('Parsed feed');
-
-    const feed = await this.feedParserProvider.parse(feedUrl);
+    try {
+      feed = await this.feedParserProvider.parse(feedUrl);
+    } catch (err) {
+      console.error(LOG_TAG, `Error reading feed: `, err);
+      throw new Error(`Error reading feed ${feedUrl}`);
+    }
 
     if (!podcast) {
-      console.log('Adding a new podcast: ', feedUrl);
+      console.log(LOG_TAG, 'Adding a new podcast: ', feedUrl);
 
       podcast = await this.podcastsRepository.create({
         name: feed.name,
@@ -49,64 +69,95 @@ export default class RefreshPodcastService {
       });
     }
 
-    console.log('Updating feed.');
+    console.log(LOG_TAG, 'Updating episodes.');
 
     if (podcast) {
       const existingPodcast = podcast;
+      const newPodcastEpisodes: Array<IEpisode> = [];
 
-      const newPodcastEpisodes: Array<IEpisode> = feed.items
-        .filter(feedItem => {
-          // Keep only feed items that have an audio file
+      await existingPodcast.updateOne({
+        isServiceAvailable: true,
+        lastSuccessfulHealthcheckAt: new Date(),
+      });
 
-          const audioFile = feedItem.files.find(file => {
-            return file.mediaType?.startsWith('audio/');
-          });
+      // Loop through feed items to create or update episodes
+      feed.items.forEach(feedItem => {
+        let existingEpisode = existingPodcast.episodes.find(episode => {
+          return episode.title === feedItem.title;
+        });
 
-          return !!audioFile;
-        })
-        .filter(feedItem => {
-          // Keep only items that don't already exist
+        const audioFile = feedItem.files.find(file => {
+          return file.mediaType?.startsWith('audio/');
+        });
 
-          const episodeExists = existingPodcast.episodes.find(episode => {
+        // If an audio file wasn't found, we ignore this item
+        if (!audioFile) return;
+
+        // Prefer itunes duration since it might be more accurate and already formatted
+        let audioDuration = feedItem.itunesDuration?.trim();
+
+        if (audioDuration && !audioDuration.includes(':')) {
+          audioDuration = formatDuration(Number(audioDuration) * 1000);
+        }
+
+        const episodeObject = {
+          title: feedItem.title,
+          description: feedItem.description,
+          date: feedItem.date || new Date(),
+          image: feedItem.image || existingPodcast.imageUrl,
+          duration: audioDuration as string,
+          file: {
+            url: audioFile.url,
+            mediaType: audioFile.mediaType || 'audio/mpeg',
+            sizeBytes: Number(audioFile.length || 0),
+          },
+        };
+
+        if (!existingEpisode) {
+          // Create the new episode
+          newPodcastEpisodes.push(episodeObject);
+        } else {
+          // Update the episode
+          existingEpisode = {
+            ...existingEpisode,
+            ...episodeObject,
+          };
+        }
+      });
+
+      console.log(
+        LOG_TAG,
+        "Updating episodes that aren't available on the feed",
+      );
+
+      // Update existing episodes that don't exist on feed anymore
+      const updatedEpisodes = existingPodcast.episodes.map<IEpisode>(
+        episode => {
+          const existsOnFeed = feed.items.find(feedItem => {
             return episode.title === feedItem.title;
           });
 
-          return !episodeExists;
-        })
-        .map(feedItem => {
-          // Normalize output
+          const updatedEpisode = episode;
 
-          const audioFile = feedItem.files.filter(file => {
-            return file.mediaType?.startsWith('audio/');
-          })[0];
+          updatedEpisode.existsOnFeed = !!existsOnFeed;
 
-          // Prefer itunes duration since it might be more precise and already formatted
-          let audioDuration = feedItem.itunesDuration;
+          return updatedEpisode;
+        },
+      );
 
-          if (audioDuration && !audioDuration.includes(':')) {
-            audioDuration = formatDuration(Number(audioDuration) * 1000);
-          }
+      console.log(LOG_TAG, `Adding ${newPodcastEpisodes.length} new episodes`);
 
-          return {
-            title: feedItem.title,
-            description: feedItem.description,
-            date: feedItem.date || new Date(),
-            image: feedItem.image || existingPodcast.imageUrl,
-            duration: audioDuration as string,
-            file: {
-              url: audioFile.url,
-              mediaType: audioFile.mediaType || 'audio/mpeg',
-            },
-          };
-        });
+      // Add new podcasts
+      const allEpisodes = updatedEpisodes;
+      allEpisodes.push(...newPodcastEpisodes);
 
-      console.log(`Adding ${newPodcastEpisodes.length} new episodes`);
-
-      existingPodcast.episodes.push(...newPodcastEpisodes);
+      await existingPodcast.updateOne({
+        episodes: allEpisodes,
+      });
 
       await existingPodcast.save();
     }
 
-    console.log('Feed updated.');
+    console.log(LOG_TAG, 'Feed updated.');
   }
 }

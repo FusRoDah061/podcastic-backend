@@ -2,7 +2,6 @@ import Axios from 'axios';
 import FeedParser, { Item } from 'feedparser';
 import { ReadStream } from 'fs';
 import { promisify } from 'util';
-import AppError from '../../../errors/AppError';
 import IFeed from '../dtos/IFeed';
 import IFeedItem from '../dtos/IFeedItem';
 import IFeedParserProvider from '../models/IFeedParserProvider';
@@ -26,7 +25,7 @@ export default class FeedParserProvider implements IFeedParserProvider {
       });
 
       if (response.status !== 200) {
-        throw new AppError('Bad status code');
+        throw new Error('Bad status code');
       }
 
       return promisify(
@@ -65,6 +64,10 @@ export default class FeedParserProvider implements IFeedParserProvider {
 
             do {
               if (feedItem) {
+                const itunesDuration = feedItem['itunes:duration']
+                  ? feedItem['itunes:duration']['#']
+                  : '';
+
                 const item: IFeedItem = {
                   title: feedItem.title,
                   description: feedItem.description,
@@ -73,7 +76,7 @@ export default class FeedParserProvider implements IFeedParserProvider {
                   author: feedItem.author,
                   guid: feedItem.guid,
                   link: feedItem.link || feedItem.origlink,
-                  itunesDuration: feedItem['itunes:duration']['#'],
+                  itunesDuration,
                   files: feedItem.enclosures.map(enclosure => {
                     return {
                       url: enclosure.url,
@@ -94,7 +97,7 @@ export default class FeedParserProvider implements IFeedParserProvider {
         },
       ).call(this, feedUrl, response.data);
     } catch (err) {
-      throw new AppError("Couldn't reach feed");
+      throw new Error("Couldn't reach feed");
     }
   }
 }

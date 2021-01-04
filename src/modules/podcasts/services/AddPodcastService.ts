@@ -5,12 +5,16 @@ import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckP
 import IMessagingSenderProvider from '../../../shared/providers/MessagingSenderProvider/models/IMessagingSenderProvider';
 import translate from '../../../shared/utils/translate';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
+import IPodcastRepository from '../repositories/IPodcastsRepository';
 
 type IRequestDTO = Omit<IPodcastQueueMessage, 'id'>;
 
 @injectable()
 export default class AddPodcastService {
   constructor(
+    @inject('PodcastRepository')
+    private podcastsRepository: IPodcastRepository,
+
     @inject('MessagingSenderProvider')
     private messagingSenderProvider: IMessagingSenderProvider,
 
@@ -22,6 +26,12 @@ export default class AddPodcastService {
     { feedUrl }: IRequestDTO,
     locale: string,
   ): Promise<void> {
+    const podcast = await this.podcastsRepository.findByFeedUrl(feedUrl);
+
+    if (podcast) {
+      throw new AppError(translate('Podcast already exists.', locale));
+    }
+
     try {
       await this.feedHealthcheckProvider.ping(feedUrl);
     } catch (err) {

@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import AppError from '../../../errors/AppError';
 import IFeedHealthcheckProvider from '../models/IFeedHealthcheckProvider';
 
 export default class AxiosFeedHealthcheckProvider
@@ -15,10 +14,10 @@ export default class AxiosFeedHealthcheckProvider
       });
 
       if (response.status !== 200) {
-        throw new AppError(`Bad status code for ${feedUrl}`);
+        throw new Error(`Bad status code for ${feedUrl}`);
       }
     } catch (err) {
-      throw new AppError(`Couldn't reach feed ${feedUrl}`);
+      throw new Error(`Couldn't reach feed ${feedUrl}`);
     }
   }
 }

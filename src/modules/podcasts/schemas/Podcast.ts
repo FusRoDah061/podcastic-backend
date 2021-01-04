@@ -10,6 +10,10 @@ const EpisodeFileSchema = new Schema(
       type: String,
       required: true,
     },
+    sizeBytes: {
+      type: Number,
+      required: true,
+    },
   },
   {
     _id: false,
@@ -19,6 +23,7 @@ const EpisodeFileSchema = new Schema(
 export interface IEpisodeFile {
   url: string;
   mediaType: string;
+  sizeBytes: number;
 }
 
 const EpisodeSchema = new Schema(
@@ -42,6 +47,11 @@ const EpisodeSchema = new Schema(
       type: String,
       required: true,
     },
+    existsOnFeed: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     file: EpisodeFileSchema,
   },
   {
@@ -56,6 +66,7 @@ export interface IEpisode {
   date: Date;
   image: string;
   duration: string;
+  existsOnFeed?: boolean;
   file: IEpisodeFile;
   createdAt?: Date;
   updatedAt?: Date;
@@ -90,6 +101,16 @@ const PodcastSchema = new Schema(
     websiteUrl: {
       type: String,
     },
+    isServiceAvailable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    lastSuccessfulHealthcheckAt: {
+      type: Date,
+      required: false,
+      default: Date.now,
+    },
     episodes: [EpisodeSchema],
   },
   {
@@ -104,6 +125,8 @@ export interface IPodcast {
   imageUrl: string;
   feedUrl: string;
   websiteUrl?: string;
+  isServiceAvailable?: boolean;
+  lastSuccessfulHealthcheckAt?: Date;
   episodes: Array<IEpisode>;
   createdAt?: Date;
   updatedAt?: Date;
@@ -111,6 +134,7 @@ export interface IPodcast {
 
 interface IPodcastBaseDocument extends IPodcast {
   _id: any;
+  episodesDocuments: Array<IEpisodeDocument>;
 }
 
 export interface IPodcastDocument extends IPodcastBaseDocument, Document {}
