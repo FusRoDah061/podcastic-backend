@@ -5,10 +5,10 @@ import messaginConfig from '../../../config/messagingConfig';
 
 export default function setupMessagingConsumerProviderInjection(): void {
   const providers = {
-    rabbit: RabbitMqMessagingConsumerProvider,
+    rabbit: new RabbitMqMessagingConsumerProvider(),
   };
 
-  container.registerSingleton<IMessagingConsumerProvider>(
+  container.registerInstance<IMessagingConsumerProvider>(
     'MessagingConsumerProvider',
     providers[messaginConfig.driver],
   );

@@ -11,6 +11,10 @@ export default function setupPodcastsMessaging(): void {
     'MessagingConsumerProvider',
   );
 
+  messagingConsumer.setMaxConcurrent(messagingConfig.config.maxConcurrent);
+
+  messagingConsumer.setRequeueAfter(messagingConfig.config.requeueAfterTime);
+
   messagingConsumer.consume({
     queueName: messagingConfig.queueNames.podcasts,
     callback: async message => {

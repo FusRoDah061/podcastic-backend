@@ -5,6 +5,8 @@ interface IMessagingConfig {
     rabbit: {
       url: string;
     };
+    maxConcurrent: number;
+    requeueAfterTime: number;
   };
 }
 
@@ -19,6 +21,8 @@ const config = {
     rabbit: {
       url: process.env.MQ_URL || process.env.CLOUDAMQP_URL,
     },
+    maxConcurrent: Number(process.env.MESSAGING_MAX_CONCURRENT_MESSAGES || 5),
+    requeueAfterTime: Number(process.env.MESSAGING_REQUEUE_AFTER),
   },
 } as IMessagingConfig;
 
