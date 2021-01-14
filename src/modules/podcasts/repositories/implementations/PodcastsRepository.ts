@@ -89,29 +89,12 @@ export default class PodcastRepository implements IPodcastRepository {
     return podcasts;
   }
 
-  public async findFromLastXDays({
-    daysOld,
-  }: IFromLastDaysPodcastDTO): Promise<IPodcastDocument[]> {
-    const now = new Date();
-    const pastDate = addDays(now, daysOld * -1);
-
-    const podcasts = await PodcastModel.find(
-      {
-        createdAt: { $gt: pastDate, $lt: now },
-      },
-      [
-        '_id',
-        'name',
-        'description',
-        'imageUrl',
-        'feedUrl',
-        'websiteUrl',
-        'createdAt',
-        'updatedAt',
-      ],
-    ).sort({
-      createdAt: -1,
-    });
+  public async findTopMostRecent(howMany: number): Promise<IPodcastDocument[]> {
+    const podcasts = await PodcastModel.find()
+      .sort({
+        createdAt: -1,
+      })
+      .limit(howMany);
 
     return podcasts;
   }

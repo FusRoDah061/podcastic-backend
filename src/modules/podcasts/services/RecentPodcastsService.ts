@@ -3,7 +3,7 @@ import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IPodcast } from '../schemas/Podcast';
 
 interface IRequestDTO {
-  daysOld: number;
+  howMany: number;
 }
 
 @injectable()
@@ -13,10 +13,8 @@ export default class RecentPodcastsService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute({ daysOld }: IRequestDTO): Promise<Array<IPodcast>> {
-    const podcasts = await this.podcastRepository.findFromLastXDays({
-      daysOld,
-    });
+  public async execute({ howMany }: IRequestDTO): Promise<Array<IPodcast>> {
+    const podcasts = await this.podcastRepository.findTopMostRecent(howMany);
 
     return podcasts;
   }
