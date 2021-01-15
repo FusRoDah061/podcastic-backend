@@ -27,9 +27,13 @@ export default class RandomEpisodeService {
       throw new AppError(translate('Podcast does not exist.', locale));
     }
 
-    const randomIndex = Math.floor(Math.random() * podcast.episodes.length);
+    const availableEpisodes = podcast.episodes.filter(
+      episode => episode.existsOnFeed,
+    );
 
-    const randomEpisode = podcast.episodes[randomIndex];
+    const randomIndex = Math.floor(Math.random() * availableEpisodes.length);
+
+    const randomEpisode = availableEpisodes[randomIndex];
 
     return randomEpisode;
   }
