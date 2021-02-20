@@ -78,6 +78,7 @@ export default class RefreshPodcastService {
       await existingPodcast.updateOne({
         isServiceAvailable: true,
         lastSuccessfulHealthcheckAt: new Date(),
+        imageUrl: feed.image,
       });
 
       // Loop through feed items to create or update episodes
