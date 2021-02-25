@@ -1,6 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
 import IFeed from '../../../shared/providers/FeedParserProvider/dtos/IFeed';
+import IFeedItem from '../../../shared/providers/FeedParserProvider/dtos/IFeedItem';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
@@ -24,7 +25,7 @@ export default class RefreshPodcastService {
     console.log('Refresh feed ', feedUrl);
 
     let podcast = await this.podcastsRepository.findByFeedUrl(feedUrl);
-    const LOG_TAG = `[${podcast?.name || feedUrl.substring(0, 20)}]: `;
+    const LOG_TAG = `[${podcast?.name ?? feedUrl.substring(0, 20)}]: `;
 
     try {
       await this.feedHealthcheckProvider.ping(feedUrl);
@@ -104,13 +105,13 @@ export default class RefreshPodcastService {
         const episodeObject = {
           title: feedItem.title,
           description: feedItem.description,
-          date: feedItem.date || new Date(),
-          image: feedItem.image || existingPodcast.imageUrl,
+          date: feedItem.date ?? new Date(),
+          image: feedItem.image ?? existingPodcast.imageUrl,
           duration: audioDuration as string,
           file: {
             url: audioFile.url,
-            mediaType: audioFile.mediaType || 'audio/mpeg',
-            sizeBytes: Number(audioFile.length || 0),
+            mediaType: audioFile.mediaType ?? 'audio/mpeg',
+            sizeBytes: Number(audioFile.length ?? 0),
           },
         };
 
@@ -134,13 +135,19 @@ export default class RefreshPodcastService {
       // Update existing episodes that don't exist on feed anymore
       const updatedEpisodes = existingPodcast.episodes.map<IEpisode>(
         episode => {
-          const existsOnFeed = feed.items.find(feedItem => {
-            return episode.title === feedItem.title;
+          const feedItem = feed.items.find(item => {
+            return episode.title === item.title;
           });
 
           const updatedEpisode = episode;
 
-          updatedEpisode.existsOnFeed = !!existsOnFeed;
+          updatedEpisode.existsOnFeed = !!feedItem;
+
+          if (feedItem) {
+            updatedEpisode.image = feedItem.image ?? existingPodcast.imageUrl;
+            updatedEpisode.date = feedItem.date ?? new Date();
+            updatedEpisode.description = feedItem.description;
+          }
 
           return updatedEpisode;
         },
