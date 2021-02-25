@@ -7,7 +7,7 @@ export default class MongodbHealthcheckProvider
   public async ping(): Promise<void> {
     try {
       await mongoose.connect(
-        process.env.MONGODB_URI || '',
+        process.env.MONGODB_URI ?? '',
         mongoConnectionOptions,
       );
     } catch (err) {

@@ -57,7 +57,7 @@ export default class FeedParserProvider implements IFeedParserProvider {
                 copyright: feedItem.meta.copyright,
                 language: feedItem.meta.language,
                 latestUpdate: feedItem.meta.date,
-                xmlUrl: feedItem.meta.xmlurl || feedurl,
+                xmlUrl: feedItem.meta.xmlurl ?? feedurl,
                 items: [],
               };
             }
@@ -72,10 +72,10 @@ export default class FeedParserProvider implements IFeedParserProvider {
                   title: feedItem.title,
                   description: feedItem.description,
                   image: feedItem.image.url,
-                  date: feedItem.pubdate || feedItem.date,
+                  date: feedItem.pubdate ?? feedItem.date,
                   author: feedItem.author,
                   guid: feedItem.guid,
-                  link: feedItem.link || feedItem.origlink,
+                  link: feedItem.link ?? feedItem.origlink,
                   itunesDuration,
                   files: feedItem.enclosures.map(enclosure => {
                     return {

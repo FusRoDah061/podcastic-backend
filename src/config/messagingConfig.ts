@@ -14,14 +14,14 @@ const config = {
   driver: process.env.MESSAGING_DRIVER,
 
   queueNames: {
-    podcasts: process.env.QUEUE_PODCASTS || 'podcasts',
+    podcasts: process.env.QUEUE_PODCASTS ?? 'podcasts',
   },
 
   config: {
     rabbit: {
-      url: process.env.MQ_URL || process.env.CLOUDAMQP_URL,
+      url: process.env.MQ_URL ?? process.env.CLOUDAMQP_URL,
     },
-    maxConcurrent: Number(process.env.MESSAGING_MAX_CONCURRENT_MESSAGES || 5),
+    maxConcurrent: Number(process.env.MESSAGING_MAX_CONCURRENT_MESSAGES ?? 5),
     requeueAfterTime: Number(process.env.MESSAGING_REQUEUE_AFTER),
   },
 } as IMessagingConfig;

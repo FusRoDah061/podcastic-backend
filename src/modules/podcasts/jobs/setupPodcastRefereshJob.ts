@@ -5,7 +5,7 @@ import SendPodcastToRefresh from '../services/SendPodcastToRefresh';
 export default function setupPodcastRefereshJob(): void {
   console.log('Setting up podcast refresh job...');
 
-  const cronExpression = process.env.REFRESH_JOB_CRON || '0 0 * * *';
+  const cronExpression = process.env.REFRESH_JOB_CRON ?? '0 0 * * *';
 
   if (cron.validate(cronExpression)) {
     cron.schedule(cronExpression, async () => {

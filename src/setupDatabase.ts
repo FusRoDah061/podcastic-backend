@@ -13,7 +13,7 @@ export default function setupDatabase(): Promise<typeof mongoose> {
   console.log('Setting up database connection...');
 
   const connection = mongoose.connect(
-    process.env.MONGODB_URI || '',
+    process.env.MONGODB_URI ?? '',
     mongoConnectionOptions,
   );
 
