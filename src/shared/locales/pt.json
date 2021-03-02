@@ -1,6 +1,7 @@
 {
-  "Couldn't reach feed. Check if the URL is correct or try again later.": "Não foi possível se conectar ao feed. Verifique se a URL está correta ou tente novamente mais tarde.",
-  "Podcast does not exist.": "O podcast não existe.",
-  "Search text must not be blank.": "Texto para buscar não pode estar em branco.",
-  "Podcast already exists.": "Podcast já existe."
+	"Couldn't reach feed. Check if the URL is correct or try again later.": "Não foi possível se conectar ao feed. Verifique se a URL está correta ou tente novamente mais tarde.",
+	"Podcast does not exist.": "O podcast não existe.",
+	"Search text must not be blank.": "Texto para buscar não pode estar em branco.",
+	"Podcast already exists.": "Podcast já existe.",
+	"An unexpected error ocurred while processing the request.": "Ocorreu um erro inesperado no processamento da solicitação."
 }
