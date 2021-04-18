@@ -19,7 +19,8 @@ export default class FeedParserProvider implements IFeedParserProvider {
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36',
-          Accept: 'text/html,text/xml,application/xhtml+xml',
+          Accept:
+            'text/html,text/xml,application/xml,application/rss+xml,application/xhtml+xml',
         },
         responseType: 'stream',
       });
