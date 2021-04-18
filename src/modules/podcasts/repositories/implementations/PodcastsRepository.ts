@@ -90,7 +90,16 @@ export default class PodcastRepository implements IPodcastRepository {
   }
 
   public async findTopMostRecent(howMany: number): Promise<IPodcastDocument[]> {
-    const podcasts = await PodcastModel.find()
+    const podcasts = await PodcastModel.find({}, [
+      '_id',
+      'name',
+      'description',
+      'imageUrl',
+      'feedUrl',
+      'websiteUrl',
+      'createdAt',
+      'updatedAt',
+    ])
       .sort({
         createdAt: -1,
       })
