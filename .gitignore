@@ -7,3 +7,5 @@ coverage
 ormconfig.json
 dist/
 *.log
+tmp/*
+!tmp/.gitkeep

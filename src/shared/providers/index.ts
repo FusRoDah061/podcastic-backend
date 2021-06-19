@@ -1,4 +1,5 @@
 import setupDatabaseHealthcheckProviderInjection from './DatabaseHealthcheckProvider';
+import setupDownloadFileProviderInjection from './DownloadFileProvider';
 import setupFeedHealthcheckProviderInjection from './FeedHealthcheckProvider';
 import setupFeedParserProviderInjection from './FeedParserProvider';
 import setupMessagingConsumerProviderInjection from './MessagingConsumerProvider';
@@ -12,4 +13,5 @@ export default function setupProviderInjections(): void {
   setupMessagingSenderProviderInjection();
   setupDatabaseHealthcheckProviderInjection();
   setupMessagingHealthcheckProviderInjection();
+  setupDownloadFileProviderInjection();
 }
