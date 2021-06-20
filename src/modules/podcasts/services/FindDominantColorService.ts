@@ -29,7 +29,10 @@ export default class FindDominantColorService {
 
     if (!imageFile) return null;
 
-    const colors = await colorPalette(imageFile.path, { type: imageFile.type });
+    const colors = await colorPalette(imageFile.path, {
+      type: imageFile.type,
+      count: 3,
+    });
 
     fs.unlinkSync(imageFile.path);
 
