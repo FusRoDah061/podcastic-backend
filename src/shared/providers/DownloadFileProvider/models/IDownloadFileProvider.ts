@@ -1,3 +1,8 @@
+export interface IDownloadedFile {
+  path: string;
+  type: string;
+}
+
 export default interface IDownloadFileProvider {
-  download(fileUrl: string): Promise<string | null>;
+  download(fileUrl: string): Promise<IDownloadedFile | null>;
 }

@@ -4,4 +4,6 @@ export default interface ICreatePodcastDTO {
   imageUrl: string;
   feedUrl: string;
   websiteUrl?: string;
+  themeColor?: string;
+  textColor?: string;
 }

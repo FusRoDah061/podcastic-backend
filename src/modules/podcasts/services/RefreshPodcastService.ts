@@ -1,12 +1,12 @@
-import { inject, injectable } from 'tsyringe';
+import { container, inject, injectable } from 'tsyringe';
 import IFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/models/IFeedHealthcheckProvider';
 import IFeed from '../../../shared/providers/FeedParserProvider/dtos/IFeed';
-import IFeedItem from '../../../shared/providers/FeedParserProvider/dtos/IFeedItem';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IEpisode } from '../schemas/Podcast';
+import FindDominantColorService from './FindDominantColorService';
 
 @injectable()
 export default class RefreshPodcastService {
@@ -73,13 +73,23 @@ export default class RefreshPodcastService {
     console.log(LOG_TAG, 'Updating episodes.');
 
     if (podcast) {
+      const findDominantColorService = container.resolve(
+        FindDominantColorService,
+      );
+
       const existingPodcast = podcast;
       const newPodcastEpisodes: Array<IEpisode> = [];
+
+      const colors = await findDominantColorService.execute({
+        imageUrl: feed.image,
+      });
 
       await existingPodcast.updateOne({
         isServiceAvailable: true,
         lastSuccessfulHealthcheckAt: new Date(),
         imageUrl: feed.image,
+        themeColor: colors?.themeColor,
+        textColor: colors?.textColor,
       });
 
       // Loop through feed items to create or update episodes

@@ -1,8 +1,7 @@
-import { addDays, compareDesc, compareAsc } from 'date-fns';
+import { compareDesc, compareAsc } from 'date-fns';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
 import IFindWithEspisodesDTO from '../../dtos/IFindWithEspisodesDTO';
-import IFromLastDaysPodcastDTO from '../../dtos/IFromLastDaysPodcastDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
 import PodcastModel, {
   IEpisode,
@@ -11,6 +10,19 @@ import PodcastModel, {
 } from '../../schemas/Podcast';
 import IPodcastRepository from '../IPodcastsRepository';
 
+const DEFAULT_FIELDS = [
+  '_id',
+  'name',
+  'description',
+  'imageUrl',
+  'feedUrl',
+  'websiteUrl',
+  'themeColor',
+  'textColor',
+  'createdAt',
+  'updatedAt',
+];
+
 export default class PodcastRepository implements IPodcastRepository {
   public async create({
     name,
@@ -18,6 +30,8 @@ export default class PodcastRepository implements IPodcastRepository {
     imageUrl,
     feedUrl,
     websiteUrl,
+    themeColor,
+    textColor,
   }: ICreatePodcastDTO): Promise<IPodcastDocument> {
     const podcastDefinition: IPodcast = {
       name,
@@ -26,6 +40,8 @@ export default class PodcastRepository implements IPodcastRepository {
       feedUrl,
       websiteUrl,
       episodes: [],
+      themeColor,
+      textColor,
     };
 
     const podcast = await PodcastModel.create(podcastDefinition);
@@ -49,16 +65,7 @@ export default class PodcastRepository implements IPodcastRepository {
   }
 
   public async findAllWithoutEpisodes(): Promise<IPodcastDocument[]> {
-    const podcasts = await PodcastModel.find({}, [
-      '_id',
-      'name',
-      'description',
-      'imageUrl',
-      'feedUrl',
-      'websiteUrl',
-      'createdAt',
-      'updatedAt',
-    ]).sort({
+    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS).sort({
       name: 1,
     });
 
@@ -72,16 +79,7 @@ export default class PodcastRepository implements IPodcastRepository {
       {
         name: new RegExp(`${nameToSearch}`, 'i'),
       },
-      [
-        '_id',
-        'name',
-        'description',
-        'imageUrl',
-        'feedUrl',
-        'websiteUrl',
-        'createdAt',
-        'updatedAt',
-      ],
+      DEFAULT_FIELDS,
     ).sort({
       name: 1,
     });
@@ -90,16 +88,7 @@ export default class PodcastRepository implements IPodcastRepository {
   }
 
   public async findTopMostRecent(howMany: number): Promise<IPodcastDocument[]> {
-    const podcasts = await PodcastModel.find({}, [
-      '_id',
-      'name',
-      'description',
-      'imageUrl',
-      'feedUrl',
-      'websiteUrl',
-      'createdAt',
-      'updatedAt',
-    ])
+    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS)
       .sort({
         createdAt: -1,
       })

@@ -100,6 +100,7 @@ const PodcastSchema = new Schema(
     },
     websiteUrl: {
       type: String,
+      required: false,
     },
     isServiceAvailable: {
       type: Boolean,
@@ -110,6 +111,14 @@ const PodcastSchema = new Schema(
       type: Date,
       required: false,
       default: Date.now,
+    },
+    themeColor: {
+      type: String,
+      required: false,
+    },
+    textColor: {
+      type: String,
+      required: false,
     },
     episodes: [EpisodeSchema],
   },
@@ -128,13 +137,15 @@ export interface IPodcast {
   isServiceAvailable?: boolean;
   lastSuccessfulHealthcheckAt?: Date;
   episodes: Array<IEpisode>;
+  themeColor?: string;
+  textColor?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 interface IPodcastBaseDocument extends IPodcast {
   _id: any;
-  episodesDocuments: Array<IEpisodeDocument>;
+  episodesDocuments?: Array<IEpisodeDocument>;
 }
 
 export interface IPodcastDocument extends IPodcastBaseDocument, Document {}
