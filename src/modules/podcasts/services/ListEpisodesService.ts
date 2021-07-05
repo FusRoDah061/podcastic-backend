@@ -1,8 +1,10 @@
 import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
 import translate from '../../../shared/utils/translate';
-import IPodcastRepository from '../repositories/IPodcastsRepository';
-import { IPodcast } from '../schemas/Podcast';
+import IEpisodesRepository from '../repositories/IEpisodesRepository';
+import IPodcastsRepository from '../repositories/IPodcastsRepository';
+import Episode from '../schemas/Episode';
+import Podcast from '../schemas/Podcast';
 
 interface IRequestDTO {
   podcastId: string;
@@ -10,27 +12,39 @@ interface IRequestDTO {
   episodeNameToSearch?: string;
 }
 
+interface IPodcastResponse extends Podcast {
+  episodes: Episode[];
+}
+
 @injectable()
 export default class ListEpisodesService {
   constructor(
     @inject('PodcastRepository')
-    private podcastRepository: IPodcastRepository,
+    private podcastsRepository: IPodcastsRepository,
+
+    @inject('EpisodeRepository')
+    private episodesRepository: IEpisodesRepository,
   ) {}
 
   public async execute(
     { podcastId, sort, episodeNameToSearch }: IRequestDTO,
     locale: string,
-  ): Promise<IPodcast> {
-    const podcast = await this.podcastRepository.findWithEpisodes({
-      podcastId,
-      sort,
-      episodeNameToSearch,
-    });
+  ): Promise<IPodcastResponse> {
+    const podcast = await this.podcastsRepository.findById({ podcastId });
 
     if (!podcast) {
       throw new AppError(translate('Podcast does not exist.', locale));
     }
 
-    return podcast;
+    const episodes = await this.episodesRepository.findAllByPodcast({
+      podcastId,
+      sort,
+      episodeNameToSearch,
+    });
+
+    return {
+      ...podcast,
+      episodes,
+    };
   }
 }

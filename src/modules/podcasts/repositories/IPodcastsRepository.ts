@@ -1,18 +1,14 @@
 import ICreatePodcastDTO from '../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../dtos/IFindPodcastByIdDTO';
-import IFindWithEspisodesDTO from '../dtos/IFindWithEspisodesDTO';
 import ISearchPodcastDTO from '../dtos/ISearchPodcastDTO';
-import { IPodcastDocument } from '../schemas/Podcast';
+import Podcast from '../schemas/Podcast';
 
 export default interface IPodcastRepository {
-  create(data: ICreatePodcastDTO): Promise<IPodcastDocument>;
-  findAll(): Promise<Array<IPodcastDocument>>;
-  findByFeedUrl(feedUrl: string): Promise<IPodcastDocument | null>;
-  findAllWithoutEpisodes(): Promise<Array<IPodcastDocument>>;
-  searchAllByName(data: ISearchPodcastDTO): Promise<Array<IPodcastDocument>>;
-  findTopMostRecent(howMany: number): Promise<Array<IPodcastDocument>>;
-  findWithEpisodes(
-    data: IFindWithEspisodesDTO,
-  ): Promise<IPodcastDocument | null>;
-  findById(data: IFindPodcastByIdDTO): Promise<IPodcastDocument | null>;
+  create(data: ICreatePodcastDTO): Promise<Podcast>;
+  save(podcast: Podcast): Promise<void>;
+  findAll(): Promise<Array<Podcast>>;
+  findByFeedUrl(feedUrl: string): Promise<Podcast | undefined>;
+  searchAllByName(data: ISearchPodcastDTO): Promise<Array<Podcast>>;
+  findTopMostRecent(howMany: number): Promise<Array<Podcast>>;
+  findById(data: IFindPodcastByIdDTO): Promise<Podcast | undefined>;
 }

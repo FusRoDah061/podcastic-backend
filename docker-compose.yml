@@ -11,3 +11,10 @@ services:
     ports:
       - '5672:5672'
       - '15672:15672'
+  postgress:
+    image: postgres
+    container_name: podcastic_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=docker

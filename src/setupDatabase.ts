@@ -1,21 +1,41 @@
-import mongoose, { ConnectionOptions } from 'mongoose';
+import { ConnectionOptions, createConnection, Connection } from 'typeorm';
 
-export const mongoConnectionOptions: ConnectionOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  poolSize: 10, // Maintain up to 10 socket connections
-  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-};
+export default function setupDatabase(): Promise<Connection> {
+  const rootDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+  const fileExtension = process.env.NODE_ENV === 'production' ? 'js' : 'ts';
 
-export default function setupDatabase(): Promise<typeof mongoose> {
   console.log('Setting up database connection...');
 
-  const connection = mongoose.connect(
-    process.env.MONGODB_URI ?? '',
-    mongoConnectionOptions,
-  );
+  let postgresConnection: ConnectionOptions = {
+    name: 'default',
+    type: 'postgres',
+    entities: [`./${rootDir}/modules/**/schemas/*.${fileExtension}`],
+    migrations: [
+      `./${rootDir}/shared/infra/typeorm/migrations/*.${fileExtension}`,
+    ],
+    cli: {
+      migrationsDir: `./${rootDir}/shared/infra/typeorm/migrations`,
+    },
+  };
 
-  return connection;
+  if (process.env.DATABASE_URL) {
+    postgresConnection = {
+      ...postgresConnection,
+      url: process.env.DATABASE_URL,
+      extra: {
+        ssl: true,
+      },
+    };
+  } else {
+    postgresConnection = {
+      ...postgresConnection,
+      host: process.env.DEFAULT_DATABASE_HOST,
+      port: Number(process.env.DEFAULT_DATABASE_PORT || 5432),
+      username: process.env.DEFAULT_DATABASE_USER,
+      password: process.env.DEFAULT_DATABASE_PASSWORD,
+      database: process.env.DEFAULT_DATABASE_NAME,
+    };
+  }
+
+  return createConnection(postgresConnection);
 }

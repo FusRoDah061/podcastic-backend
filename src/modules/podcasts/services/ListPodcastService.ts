@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
-import { IPodcast } from '../schemas/Podcast';
+import Podcast from '../schemas/Podcast';
 
 @injectable()
 export default class ListPodcastService {
@@ -9,8 +9,8 @@ export default class ListPodcastService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute(): Promise<Array<IPodcast>> {
-    const podcasts = await this.podcastRepository.findAllWithoutEpisodes();
+  public async execute(): Promise<Array<Podcast>> {
+    const podcasts = await this.podcastRepository.findAll();
 
     return podcasts;
   }

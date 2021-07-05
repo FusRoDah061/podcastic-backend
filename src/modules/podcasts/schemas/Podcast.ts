@@ -1,159 +1,52 @@
-import { Document, Model, model, Schema } from 'mongoose';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-const EpisodeFileSchema = new Schema(
-  {
-    url: {
-      type: String,
-      required: true,
-    },
-    mediaType: {
-      type: String,
-      required: true,
-    },
-    sizeBytes: {
-      type: Number,
-      required: true,
-    },
-  },
-  {
-    _id: false,
-  },
-);
+@Entity('podcasts')
+export default class Podcast {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-export interface IEpisodeFile {
-  url: string;
-  mediaType: string;
-  sizeBytes: number;
-}
-
-const EpisodeSchema = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-    },
-    date: {
-      type: Date,
-      required: true,
-    },
-    image: {
-      type: String,
-      required: true,
-    },
-    duration: {
-      type: String,
-      required: true,
-    },
-    existsOnFeed: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    file: EpisodeFileSchema,
-  },
-  {
-    timestamps: true,
-  },
-);
-
-export interface IEpisode {
-  _id?: any;
-  title: string;
-  description: string;
-  date: Date;
-  image: string;
-  duration: string;
-  existsOnFeed?: boolean;
-  file: IEpisodeFile;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-interface IEpisodeBaseDocument extends IEpisode {
-  _id: any;
-}
-
-export interface IEpisodeDocument extends IEpisodeBaseDocument, Document {}
-
-const PodcastSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    imageUrl: {
-      type: String,
-      required: true,
-    },
-    feedUrl: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
-    websiteUrl: {
-      type: String,
-      required: false,
-    },
-    isServiceAvailable: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    lastSuccessfulHealthcheckAt: {
-      type: Date,
-      required: false,
-      default: Date.now,
-    },
-    themeColor: {
-      type: String,
-      required: false,
-    },
-    textColor: {
-      type: String,
-      required: false,
-    },
-    episodes: [EpisodeSchema],
-  },
-  {
-    timestamps: true,
-  },
-);
-
-export interface IPodcast {
-  _id?: any;
+  @Column({ nullable: false })
   name: string;
-  description: string;
+
+  @Column({ nullable: true })
+  description?: string;
+
+  @Column({ name: 'image_url', nullable: false })
   imageUrl: string;
-  feedUrl: string;
+
+  @Column({ name: 'website_url', nullable: true })
   websiteUrl?: string;
+
+  @Column({ name: 'feed_url', unique: true, nullable: false })
+  @Index({ unique: true, fulltext: true })
+  feedUrl: string;
+
+  @Column({ name: 'is_service_available', nullable: true })
   isServiceAvailable?: boolean;
-  lastSuccessfulHealthcheckAt?: Date;
-  episodes: Array<IEpisode>;
+
+  @Column({
+    name: 'last_successful_healthcheck_at',
+    nullable: true,
+    type: 'timestamp with time zone',
+  })
+  lastSuccessfulHealthcheckAt: Date;
+
+  @Column({ name: 'theme_color', nullable: true })
   themeColor?: string;
+
+  @Column({ name: 'text_color', nullable: true })
   textColor?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }
-
-interface IPodcastBaseDocument extends IPodcast {
-  _id: any;
-  episodesDocuments?: Array<IEpisodeDocument>;
-}
-
-export interface IPodcastDocument extends IPodcastBaseDocument, Document {}
-
-export type IPodcastModel = Model<IPodcastDocument>;
-
-export default model<IPodcastDocument, IPodcastModel>(
-  'PodcastModel',
-  PodcastSchema,
-  'podcasts',
-);

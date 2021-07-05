@@ -1,29 +1,17 @@
-import { compareDesc, compareAsc } from 'date-fns';
+import { getRepository, Repository } from 'typeorm';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
-import IFindWithEspisodesDTO from '../../dtos/IFindWithEspisodesDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
-import PodcastModel, {
-  IEpisode,
-  IPodcast,
-  IPodcastDocument,
-} from '../../schemas/Podcast';
+import Podcast from '../../schemas/Podcast';
 import IPodcastRepository from '../IPodcastsRepository';
 
-const DEFAULT_FIELDS = [
-  '_id',
-  'name',
-  'description',
-  'imageUrl',
-  'feedUrl',
-  'websiteUrl',
-  'themeColor',
-  'textColor',
-  'createdAt',
-  'updatedAt',
-];
-
 export default class PodcastRepository implements IPodcastRepository {
+  private ormRepository: Repository<Podcast>;
+
+  constructor() {
+    this.ormRepository = getRepository(Podcast);
+  }
+
   public async create({
     name,
     description,
@@ -32,135 +20,63 @@ export default class PodcastRepository implements IPodcastRepository {
     websiteUrl,
     themeColor,
     textColor,
-  }: ICreatePodcastDTO): Promise<IPodcastDocument> {
-    const podcastDefinition: IPodcast = {
+  }: ICreatePodcastDTO): Promise<Podcast> {
+    const podcast = this.ormRepository.create({
       name,
       description,
       imageUrl,
       feedUrl,
       websiteUrl,
-      episodes: [],
       themeColor,
       textColor,
-    };
+    });
 
-    const podcast = await PodcastModel.create(podcastDefinition);
+    await this.ormRepository.save(podcast);
 
     return podcast;
   }
 
-  public async findAll(): Promise<Array<IPodcastDocument>> {
-    const podcasts = await PodcastModel.find();
+  public async save(podcast: Podcast): Promise<void> {
+    await this.ormRepository.save(podcast);
+  }
+
+  public async findAll(): Promise<Array<Podcast>> {
+    const podcasts = await this.ormRepository.find();
     return podcasts;
   }
 
-  public async findByFeedUrl(
-    feedUrl: string,
-  ): Promise<IPodcastDocument | null> {
-    const podcast = await PodcastModel.findOne({
+  public async findByFeedUrl(feedUrl: string): Promise<Podcast | undefined> {
+    const podcast = await this.ormRepository.findOne({
       feedUrl,
     });
 
     return podcast;
   }
 
-  public async findAllWithoutEpisodes(): Promise<IPodcastDocument[]> {
-    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS).sort({
-      name: 1,
-    });
-
-    return podcasts;
-  }
-
   public async searchAllByName({
     nameToSearch,
-  }: ISearchPodcastDTO): Promise<IPodcastDocument[]> {
-    const podcasts = await PodcastModel.find(
-      {
-        name: new RegExp(`${nameToSearch}`, 'i'),
-      },
-      DEFAULT_FIELDS,
-    ).sort({
-      name: 1,
+  }: ISearchPodcastDTO): Promise<Podcast[]> {
+    const podcasts = await this.ormRepository.find({
+      where: { name: nameToSearch },
+      order: { name: 'ASC' },
     });
 
     return podcasts;
   }
 
-  public async findTopMostRecent(howMany: number): Promise<IPodcastDocument[]> {
-    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS)
-      .sort({
-        createdAt: -1,
-      })
-      .limit(howMany);
+  public async findTopMostRecent(howMany: number): Promise<Podcast[]> {
+    const podcasts = await this.ormRepository.find({
+      take: howMany,
+      order: { createdAt: 'DESC' },
+    });
 
     return podcasts;
-  }
-
-  public async findWithEpisodes({
-    podcastId,
-    sort,
-    episodeNameToSearch,
-  }: IFindWithEspisodesDTO): Promise<IPodcastDocument | null> {
-    let sortFunction: (a: IEpisode, b: IEpisode) => number;
-
-    switch (sort) {
-      case 'oldest':
-        sortFunction = (a: IEpisode, b: IEpisode) => {
-          return compareAsc(a.date, b.date);
-        };
-        break;
-      case 'longest':
-        sortFunction = (a: IEpisode, b: IEpisode) => {
-          if (b.duration === a.duration) return 0;
-
-          if (a.duration > b.duration) {
-            return -1;
-          }
-
-          return 1;
-        };
-        break;
-      case 'shortest':
-        sortFunction = (a: IEpisode, b: IEpisode) => {
-          if (b.duration === a.duration) return 0;
-
-          if (b.duration > a.duration) {
-            return -1;
-          }
-
-          return 1;
-        };
-        break;
-      default:
-        sortFunction = (a: IEpisode, b: IEpisode) => {
-          return compareDesc(a.date, b.date);
-        };
-    }
-
-    const podcast = await PodcastModel.findById(podcastId);
-
-    if (podcast) {
-      const filteredEpisodes = !episodeNameToSearch
-        ? podcast.episodes
-        : podcast.episodes.filter(episode => {
-            return episode.title
-              .toLocaleLowerCase()
-              .includes(episodeNameToSearch.toLocaleLowerCase());
-          });
-
-      filteredEpisodes.sort(sortFunction);
-
-      podcast.episodes = filteredEpisodes;
-    }
-
-    return podcast;
   }
 
   public async findById({
     podcastId,
-  }: IFindPodcastByIdDTO): Promise<IPodcastDocument | null> {
-    const podcast = await PodcastModel.findById(podcastId);
+  }: IFindPodcastByIdDTO): Promise<Podcast | undefined> {
+    const podcast = await this.ormRepository.findOne(podcastId);
     return podcast;
   }
 }

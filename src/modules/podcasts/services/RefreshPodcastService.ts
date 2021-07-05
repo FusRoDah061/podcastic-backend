@@ -4,8 +4,9 @@ import IFeed from '../../../shared/providers/FeedParserProvider/dtos/IFeed';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
+import IEpisodesRepository from '../repositories/IEpisodesRepository';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
-import { IEpisode } from '../schemas/Podcast';
+import Episode from '../schemas/Episode';
 import FindDominantColorService from './FindDominantColorService';
 
 @injectable()
@@ -13,6 +14,9 @@ export default class RefreshPodcastService {
   constructor(
     @inject('PodcastRepository')
     private podcastsRepository: IPodcastRepository,
+
+    @inject('EpisodeRepository')
+    private episodesRepository: IEpisodesRepository,
 
     @inject('FeedHealthcheckProvider')
     private feedHealthcheckProvider: IFeedHealthcheckProvider,
@@ -36,11 +40,9 @@ export default class RefreshPodcastService {
       if (podcast) {
         console.log(LOG_TAG, 'Podcast exists but the feed is down.');
 
-        await podcast.updateOne({
-          isServiceAvailable: false,
-        });
+        podcast.isServiceAvailable = false;
 
-        await podcast.save();
+        await this.podcastsRepository.save(podcast);
       } else {
         // If the podcast doesn't exist, we throw an error so that the message consumption is rolled back to be reprocessed later
         throw new Error(`Error checking feed ${feedUrl}`);
@@ -70,7 +72,7 @@ export default class RefreshPodcastService {
       });
     }
 
-    console.log(LOG_TAG, 'Updating episodes.');
+    console.log(LOG_TAG, 'Updating/creating episodes.');
 
     if (podcast) {
       const findDominantColorService = container.resolve(
@@ -78,23 +80,35 @@ export default class RefreshPodcastService {
       );
 
       const existingPodcast = podcast;
-      const newPodcastEpisodes: Array<IEpisode> = [];
+
+      console.log(LOG_TAG, 'Getting podcast dominant color.');
 
       const colors = await findDominantColorService.execute({
         imageUrl: feed.image,
       });
 
-      await existingPodcast.updateOne({
-        isServiceAvailable: true,
-        lastSuccessfulHealthcheckAt: new Date(),
-        imageUrl: feed.image,
-        themeColor: colors?.themeColor,
-        textColor: colors?.textColor,
+      existingPodcast.isServiceAvailable = true;
+      existingPodcast.lastSuccessfulHealthcheckAt = new Date();
+      existingPodcast.imageUrl = feed.image;
+      existingPodcast.themeColor = colors?.themeColor;
+      existingPodcast.textColor = colors?.textColor;
+
+      await this.podcastsRepository.save(existingPodcast);
+
+      console.log(LOG_TAG, 'Fetching existing episodes.');
+
+      const newPodcastEpisodes: Array<Episode> = [];
+      const episodes = await this.episodesRepository.findAllByPodcast({
+        podcastId: existingPodcast.id,
       });
+
+      const promiseList: Array<Promise<any>> = [];
+
+      console.log(LOG_TAG, 'Looping feed items.');
 
       // Loop through feed items to create or update episodes
       feed.items.forEach(feedItem => {
-        let existingEpisode = existingPodcast.episodes.find(episode => {
+        const existingEpisode = episodes.find(episode => {
           return episode.title === feedItem.title;
         });
 
@@ -111,31 +125,36 @@ export default class RefreshPodcastService {
         if (audioDuration && !audioDuration.includes(':')) {
           audioDuration = formatDuration(Number(audioDuration) * 1000);
         }
-
-        const episodeObject = {
-          title: feedItem.title,
-          description: feedItem.description,
-          date: feedItem.date ?? new Date(),
-          image: feedItem.image ?? existingPodcast.imageUrl,
-          duration: audioDuration as string,
-          file: {
+        if (!existingEpisode) {
+          const createEpisodePromise = this.episodesRepository.create({
+            podcastId: existingPodcast.id,
+            title: feedItem.title,
+            description: feedItem.description,
+            date: feedItem.date ?? new Date(),
+            image: feedItem.image ?? existingPodcast.imageUrl,
+            duration: audioDuration as string,
             url: audioFile.url,
             mediaType: audioFile.mediaType ?? 'audio/mpeg',
             sizeBytes: Number(audioFile.length ?? 0),
-          },
-        };
+          });
 
-        if (!existingEpisode) {
-          // Create the new episode
-          newPodcastEpisodes.push(episodeObject);
+          promiseList.push(createEpisodePromise);
         } else {
           // Update the episode
-          existingEpisode = {
-            ...existingEpisode,
-            ...episodeObject,
-          };
+          existingEpisode.title = feedItem.title;
+          existingEpisode.description = feedItem.description;
+          existingEpisode.date = feedItem.date ?? new Date();
+          existingEpisode.image = feedItem.image ?? existingPodcast.imageUrl;
+          existingEpisode.duration = audioDuration as string;
+          existingEpisode.url = audioFile.url;
+          existingEpisode.mediaType = audioFile.mediaType ?? 'audio/mpeg';
+          existingEpisode.sizeBytes = Number(audioFile.length ?? 0);
+
+          promiseList.push(this.episodesRepository.save(existingEpisode));
         }
       });
+
+      await Promise.all(promiseList);
 
       console.log(
         LOG_TAG,
@@ -143,37 +162,29 @@ export default class RefreshPodcastService {
       );
 
       // Update existing episodes that don't exist on feed anymore
-      const updatedEpisodes = existingPodcast.episodes.map<IEpisode>(
-        episode => {
-          const feedItem = feed.items.find(item => {
-            return episode.title === item.title;
-          });
+      const updatedAvailabilityEpisodes = episodes.map<Episode>(episode => {
+        const feedItem = feed.items.find(item => {
+          return episode.title === item.title;
+        });
 
-          const updatedEpisode = episode;
+        const updatedEpisode = episode;
 
-          updatedEpisode.existsOnFeed = !!feedItem;
+        updatedEpisode.existsOnFeed = !!feedItem;
 
-          if (feedItem) {
-            updatedEpisode.image = feedItem.image ?? existingPodcast.imageUrl;
-            updatedEpisode.date = feedItem.date ?? new Date();
-            updatedEpisode.description = feedItem.description;
-          }
+        if (feedItem) {
+          updatedEpisode.image = feedItem.image ?? existingPodcast.imageUrl;
+          updatedEpisode.date = feedItem.date ?? new Date();
+          updatedEpisode.description = feedItem.description;
+        }
 
-          return updatedEpisode;
-        },
-      );
-
-      console.log(LOG_TAG, `Adding ${newPodcastEpisodes.length} new episodes`);
-
-      // Add new podcasts
-      const allEpisodes = updatedEpisodes;
-      allEpisodes.push(...newPodcastEpisodes);
-
-      await existingPodcast.updateOne({
-        episodes: allEpisodes,
+        return updatedEpisode;
       });
 
-      await existingPodcast.save();
+      await this.episodesRepository.save(...updatedAvailabilityEpisodes);
+
+      console.log(LOG_TAG, `Added ${newPodcastEpisodes.length} new episodes`);
+
+      await this.podcastsRepository.save(existingPodcast);
     }
 
     console.log(LOG_TAG, 'Feed updated.');
