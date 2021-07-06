@@ -41,7 +41,7 @@ export default class PodcastRepository implements IPodcastRepository {
   }
 
   public async findAll(): Promise<Array<Podcast>> {
-    const podcasts = await this.ormRepository.find();
+    const podcasts = await this.ormRepository.find({ order: { name: 'ASC' } });
     return podcasts;
   }
 
