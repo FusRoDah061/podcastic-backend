@@ -41,8 +41,8 @@ export default class Episode {
   })
   mediaType: string;
 
-  @Column({ name: 'size_bytes', nullable: false })
-  sizeBytes: number;
+  @Column({ name: 'size_bytes', nullable: true })
+  sizeBytes?: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

@@ -69,7 +69,7 @@ export default class CreateEpisodesTable1625175556673
             name: 'size_bytes',
             type: 'integer',
             comment: 'Episode media size in bytes',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'created_at',
