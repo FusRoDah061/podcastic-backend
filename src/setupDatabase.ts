@@ -22,9 +22,6 @@ export default function setupDatabase(): Promise<Connection> {
     postgresConnection = {
       ...postgresConnection,
       url: process.env.DATABASE_URL,
-      extra: {
-        ssl: true,
-      },
     };
   } else {
     postgresConnection = {
@@ -34,6 +31,15 @@ export default function setupDatabase(): Promise<Connection> {
       username: process.env.DEFAULT_DATABASE_USER,
       password: process.env.DEFAULT_DATABASE_PASSWORD,
       database: process.env.DEFAULT_DATABASE_NAME,
+    };
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    postgresConnection = {
+      ...postgresConnection,
+      extra: {
+        ssl: { rejectUnauthorized: false },
+      },
     };
   }
 
