@@ -122,9 +122,21 @@ export default class RefreshPodcastService {
         // Prefer itunes duration since it might be more accurate and already formatted
         let audioDuration = feedItem.itunesDuration?.trim();
 
-        if (audioDuration && !audioDuration.includes(':')) {
-          audioDuration = formatDuration(Number(audioDuration) * 1000);
+        if (audioDuration) {
+          if (!audioDuration.includes(':')) {
+            audioDuration = formatDuration(Number(audioDuration) * 1000);
+          }
+
+          // Duration should match format HH:MM:SS
+          if (audioDuration.length < 5) {
+            // If it's M:SS
+            audioDuration = `00:${audioDuration.padStart(5, '0')}`;
+          } else if (audioDuration.length < 8) {
+            // If it's MM:SS
+            audioDuration = `00:${audioDuration}`;
+          }
         }
+
         if (!existingEpisode) {
           const createEpisodePromise = this.episodesRepository.create({
             podcastId: existingPodcast.id,
