@@ -26,8 +26,8 @@ export default class Episode {
   @Column({ nullable: false })
   image: string;
 
-  @Column({ nullable: false })
-  duration: string;
+  @Column({ nullable: true })
+  duration?: string;
 
   @Column({ name: 'exists_on_feed', nullable: true })
   existsOnFeed?: boolean;
