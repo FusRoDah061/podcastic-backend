@@ -4,16 +4,11 @@ import translate from '../../../shared/utils/translate';
 import IEpisodesRepository from '../repositories/IEpisodesRepository';
 import IPodcastsRepository from '../repositories/IPodcastsRepository';
 import Episode from '../schemas/Episode';
-import Podcast from '../schemas/Podcast';
 
 interface IRequestDTO {
   podcastId: string;
   sort?: string | 'newest' | 'oldest' | 'longest' | 'shortest';
   episodeNameToSearch?: string;
-}
-
-interface IPodcastResponse extends Podcast {
-  episodes: Episode[];
 }
 
 @injectable()
@@ -29,7 +24,7 @@ export default class ListEpisodesService {
   public async execute(
     { podcastId, sort, episodeNameToSearch }: IRequestDTO,
     locale: string,
-  ): Promise<IPodcastResponse> {
+  ): Promise<Episode[]> {
     const podcast = await this.podcastsRepository.findById({ podcastId });
 
     if (!podcast) {
@@ -42,9 +37,6 @@ export default class ListEpisodesService {
       episodeNameToSearch,
     });
 
-    return {
-      ...podcast,
-      episodes,
-    };
+    return episodes;
   }
 }

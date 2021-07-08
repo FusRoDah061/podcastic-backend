@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 import AddPodcastService from '../services/AddPodcastService';
-import ListPodcastService from '../services/ListPodcastService';
+import ListPodcastsService from '../services/ListPodcastsService';
 
 export default class AllPodcastsController {
   public async index(request: Request, response: Response): Promise<Response> {
-    const listPodcastService = container.resolve(ListPodcastService);
+    const listPodcastsService = container.resolve(ListPodcastsService);
 
-    const podcasts = await listPodcastService.execute();
+    const podcasts = await listPodcastsService.execute();
 
     return response.json(podcasts);
   }

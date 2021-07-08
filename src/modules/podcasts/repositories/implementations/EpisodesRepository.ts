@@ -82,14 +82,14 @@ export default class EpisodesRepository implements IEpisodesRepository {
         },
         order,
       });
+    } else {
+      episodes = await this.ormRepository.find({
+        where: {
+          podcastId,
+        },
+        order,
+      });
     }
-
-    episodes = await this.ormRepository.find({
-      where: {
-        podcastId,
-      },
-      order,
-    });
 
     return episodes;
   }
