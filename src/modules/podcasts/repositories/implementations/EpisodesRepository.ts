@@ -1,4 +1,4 @@
-import { Repository, getRepository, Like } from 'typeorm';
+import { Repository, getRepository, ILike } from 'typeorm';
 import ICreateEpisodeDTO from '../../dtos/ICreateEpisodeDTO';
 import IFindAllByPodcastDTO from '../../dtos/IFindAllByPodcastDTO';
 import Episode from '../../schemas/Episode';
@@ -78,7 +78,7 @@ export default class EpisodesRepository implements IEpisodesRepository {
       episodes = await this.ormRepository.find({
         where: {
           podcastId,
-          title: Like(`%${episodeNameToSearch}%`),
+          title: ILike(`%${episodeNameToSearch}%`),
         },
         order,
       });

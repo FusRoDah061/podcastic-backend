@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, ILike, Repository } from 'typeorm';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
@@ -57,7 +57,7 @@ export default class PodcastRepository implements IPodcastRepository {
     nameToSearch,
   }: ISearchPodcastDTO): Promise<Podcast[]> {
     const podcasts = await this.ormRepository.find({
-      where: { name: nameToSearch },
+      where: { name: ILike(`%${nameToSearch}%`) },
       order: { name: 'ASC' },
     });
 
