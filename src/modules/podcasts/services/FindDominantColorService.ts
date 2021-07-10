@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { inject, injectable } from 'tsyringe';
-import colorPalette from 'get-image-colors';
 import getBestContrastColor from 'get-best-contrast-color';
 import ColorContrastChecker from 'color-contrast-checker';
+import Vibrant from 'node-vibrant';
 import IDownloadFileProvider from '../../../shared/providers/DownloadFileProvider/models/IDownloadFileProvider';
 
 interface IRequest {
@@ -29,34 +29,50 @@ export default class FindDominantColorService {
 
     if (!imageFile) return null;
 
-    const colors = await colorPalette(imageFile.path, {
-      type: imageFile.type,
-      count: 3,
-    });
+    const pallete = await Vibrant.from(imageFile.path).getPalette();
+
+    const colors = [
+      pallete.DarkVibrant?.hex.toUpperCase(),
+      pallete.LightVibrant?.hex.toUpperCase(),
+      pallete.Vibrant?.hex.toUpperCase(),
+    ];
+
+    console.log('colors: ', colors);
 
     fs.unlinkSync(imageFile.path);
 
     if (colors.length > 0) {
-      const colorsStrings = colors.map(color => color.hex());
       const bestContrastWithBlack = getBestContrastColor(
         TEXT_COLOR_BLACK,
-        colorsStrings,
+        colors,
       );
       const bestContrastWithWhite = getBestContrastColor(
         TEXT_COLOR_WHITE,
-        colorsStrings,
+        colors,
       );
 
-      const ccc = new ColorContrastChecker();
+      const colorContrastChecker = new ColorContrastChecker();
 
-      if (ccc.isLevelAA(TEXT_COLOR_WHITE, bestContrastWithWhite, 14)) {
+      if (
+        colorContrastChecker.isLevelAA(
+          TEXT_COLOR_WHITE,
+          bestContrastWithWhite,
+          14,
+        )
+      ) {
         return {
           themeColor: bestContrastWithWhite,
           textColor: TEXT_COLOR_WHITE,
         };
       }
 
-      if (ccc.isLevelAA(TEXT_COLOR_BLACK, bestContrastWithBlack, 14)) {
+      if (
+        colorContrastChecker.isLevelAA(
+          TEXT_COLOR_BLACK,
+          bestContrastWithBlack,
+          14,
+        )
+      ) {
         return {
           themeColor: bestContrastWithBlack,
           textColor: TEXT_COLOR_BLACK,
