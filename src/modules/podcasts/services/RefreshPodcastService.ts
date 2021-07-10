@@ -6,7 +6,7 @@ import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
 import IEpisodesRepository from '../repositories/IEpisodesRepository';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
-import Episode from '../schemas/Episode';
+import { IEpisode } from '../schemas/Episode';
 import FindDominantColorService from './FindDominantColorService';
 
 @injectable()
@@ -97,7 +97,7 @@ export default class RefreshPodcastService {
 
       console.log(LOG_TAG, 'Fetching existing episodes.');
 
-      const newPodcastEpisodes: Array<Episode> = [];
+      const newPodcastEpisodes: Array<IEpisode> = [];
       const episodes = await this.episodesRepository.findAllByPodcast({
         podcastId: existingPodcast.id,
       });
@@ -174,7 +174,7 @@ export default class RefreshPodcastService {
       );
 
       // Update existing episodes that don't exist on feed anymore
-      const updatedAvailabilityEpisodes = episodes.map<Episode>(episode => {
+      const updatedAvailabilityEpisodes = episodes.map<IEpisode>(episode => {
         const feedItem = feed.items.find(item => {
           return episode.title === item.title;
         });

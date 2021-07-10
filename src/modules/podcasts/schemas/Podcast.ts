@@ -1,52 +1,71 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Document, model } from 'mongoose';
+import BaseSchema from '../../../shared/infra/mongoose/helpers/BaseSchema';
 
-@Entity('podcasts')
-export default class Podcast {
-  @PrimaryGeneratedColumn('uuid')
+// TODO: https://stackoverflow.com/questions/7034848/mongodb-output-id-instead-of-id
+
+export const PodcastSchema = new BaseSchema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
+    feedUrl: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    websiteUrl: {
+      type: String,
+      required: false,
+    },
+    isServiceAvailable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    lastSuccessfulHealthcheckAt: {
+      type: Date,
+      required: false,
+      default: Date.now,
+    },
+    themeColor: {
+      type: String,
+      required: false,
+    },
+    textColor: {
+      type: String,
+      required: false,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+export interface IPodcast {
   id: string;
-
-  @Column({ nullable: false })
   name: string;
-
-  @Column({ nullable: true })
-  description?: string;
-
-  @Column({ name: 'image_url', nullable: false })
+  description: string;
   imageUrl: string;
-
-  @Column({ name: 'website_url', nullable: true })
-  websiteUrl?: string;
-
-  @Column({ name: 'feed_url', unique: true, nullable: false })
-  @Index({ unique: true, fulltext: true })
   feedUrl: string;
-
-  @Column({ name: 'is_service_available', nullable: true })
+  websiteUrl?: string;
   isServiceAvailable?: boolean;
-
-  @Column({
-    name: 'last_successful_healthcheck_at',
-    nullable: true,
-    type: 'timestamp with time zone',
-  })
-  lastSuccessfulHealthcheckAt: Date;
-
-  @Column({ name: 'theme_color', nullable: true })
+  lastSuccessfulHealthcheckAt?: Date;
   themeColor?: string;
-
-  @Column({ name: 'text_color', nullable: true })
   textColor?: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+export interface IPodcastModel extends Omit<IPodcast, 'id'>, Document {}
+
+export default model<IPodcastModel>('PodcastModel', PodcastSchema, 'podcasts');

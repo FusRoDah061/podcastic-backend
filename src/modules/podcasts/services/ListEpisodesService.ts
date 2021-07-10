@@ -3,7 +3,7 @@ import AppError from '../../../shared/errors/AppError';
 import translate from '../../../shared/utils/translate';
 import IEpisodesRepository from '../repositories/IEpisodesRepository';
 import IPodcastsRepository from '../repositories/IPodcastsRepository';
-import Episode from '../schemas/Episode';
+import { IEpisode } from '../schemas/Episode';
 
 interface IRequestDTO {
   podcastId: string;
@@ -24,7 +24,7 @@ export default class ListEpisodesService {
   public async execute(
     { podcastId, sort, episodeNameToSearch }: IRequestDTO,
     locale: string,
-  ): Promise<Episode[]> {
+  ): Promise<IEpisode[]> {
     const podcast = await this.podcastsRepository.findById({ podcastId });
 
     if (!podcast) {

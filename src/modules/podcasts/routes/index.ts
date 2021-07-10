@@ -32,7 +32,7 @@ router.get(
   '/:podcastId',
   celebrate({
     [Segments.PARAMS]: {
-      podcastId: Joi.string().uuid().required(),
+      podcastId: Joi.string().required(),
     },
   }),
   podcastsController.index,
@@ -42,7 +42,7 @@ router.get(
   '/:podcastId/episodes',
   celebrate({
     [Segments.PARAMS]: {
-      podcastId: Joi.string().uuid().required(),
+      podcastId: Joi.string().required(),
     },
     [Segments.QUERY]: {
       sort: Joi.string()
@@ -59,7 +59,7 @@ router.get(
   '/:podcastId/episodes/random',
   celebrate({
     [Segments.PARAMS]: {
-      podcastId: Joi.string().uuid().required(),
+      podcastId: Joi.string().required(),
     },
   }),
   randomEpisodeController.index,

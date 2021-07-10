@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
-import Podcast from '../schemas/Podcast';
+import { IPodcast } from '../schemas/Podcast';
 
 interface IRequestDTO {
   howMany: number;
@@ -13,7 +13,7 @@ export default class RecentPodcastsService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute({ howMany }: IRequestDTO): Promise<Array<Podcast>> {
+  public async execute({ howMany }: IRequestDTO): Promise<Array<IPodcast>> {
     const podcasts = await this.podcastRepository.findTopMostRecent(howMany);
 
     return podcasts;

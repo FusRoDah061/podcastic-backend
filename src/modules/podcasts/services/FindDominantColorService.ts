@@ -37,8 +37,6 @@ export default class FindDominantColorService {
       pallete.Vibrant?.hex.toUpperCase(),
     ];
 
-    console.log('colors: ', colors);
-
     fs.unlinkSync(imageFile.path);
 
     if (colors.length > 0) {

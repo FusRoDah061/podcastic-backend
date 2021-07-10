@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
 import translate from '../../../shared/utils/translate';
 import IPodcastsRepository from '../repositories/IPodcastsRepository';
-import Podcast from '../schemas/Podcast';
+import { IPodcast } from '../schemas/Podcast';
 
 @injectable()
 export default class ListEpisodesService {
@@ -11,7 +11,7 @@ export default class ListEpisodesService {
     private podcastsRepository: IPodcastsRepository,
   ) {}
 
-  public async execute(podcastId: string, locale: string): Promise<Podcast> {
+  public async execute(podcastId: string, locale: string): Promise<IPodcast> {
     const podcast = await this.podcastsRepository.findById({ podcastId });
 
     if (!podcast) {

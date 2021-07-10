@@ -8,4 +8,5 @@ export default interface ICreateEpisodeDTO {
   url: string;
   mediaType: string;
   sizeBytes: number;
+  existsOnFeed?: boolean;
 }

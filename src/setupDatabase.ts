@@ -1,12 +1,27 @@
-import { ConnectionOptions, createConnection, Connection } from 'typeorm';
+import mongoose, {
+  ConnectionOptions as MongooseConnectionOptions,
+} from 'mongoose';
+import {
+  ConnectionOptions as PostgresConnectionOptions,
+  createConnection,
+} from 'typeorm';
 
-export default function setupDatabase(): Promise<Connection> {
+export const mongoConnectionOptions: MongooseConnectionOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  poolSize: 10, // Maintain up to 10 socket connections
+  serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+};
+
+async function setupPostgresConnection(): Promise<void> {
   const rootDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
   const fileExtension = process.env.NODE_ENV === 'production' ? 'js' : 'ts';
 
-  console.log('Setting up database connection...');
+  console.log('Setting up Postgres connection...');
 
-  let postgresConnection: ConnectionOptions = {
+  let postgresConnection: PostgresConnectionOptions = {
     name: 'default',
     type: 'postgres',
     entities: [`./${rootDir}/modules/**/schemas/*.${fileExtension}`],
@@ -43,5 +58,19 @@ export default function setupDatabase(): Promise<Connection> {
     };
   }
 
-  return createConnection(postgresConnection);
+  await createConnection(postgresConnection);
+
+  console.log('Got Postgres connection...');
+}
+
+async function setupMongodbConnection(): Promise<void> {
+  console.log('Setting up MongoDB connection...');
+
+  await mongoose.connect(process.env.MONGODB_URI ?? '', mongoConnectionOptions);
+
+  console.log('Got MongoDB connection...');
+}
+
+export default async function setupDatabase(): Promise<void> {
+  await Promise.all([setupPostgresConnection(), setupMongodbConnection()]);
 }

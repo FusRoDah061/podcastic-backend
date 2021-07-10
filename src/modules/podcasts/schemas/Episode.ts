@@ -1,52 +1,71 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Document, model } from 'mongoose';
+import BaseSchema from '../../../shared/infra/mongoose/helpers/BaseSchema';
 
-@Entity('episodes')
-export default class Episode {
-  @PrimaryGeneratedColumn('uuid')
+export const EpisodeSchema = new BaseSchema(
+  {
+    podcastId: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    duration: {
+      type: String,
+      required: false,
+    },
+    existsOnFeed: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+    mediaType: {
+      type: String,
+      required: true,
+    },
+    sizeBytes: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+export interface IEpisode {
   id: string;
-
-  @Column({ name: 'podcast_id', nullable: false })
   podcastId: string;
-
-  @Column({ nullable: false })
   title: string;
-
-  @Column({ nullable: true })
-  description?: string;
-
-  @Column({ nullable: false, type: 'timestamp with time zone' })
+  description: string;
   date: Date;
-
-  @Column({ nullable: false })
   image: string;
-
-  @Column({ nullable: true })
-  duration?: string;
-
-  @Column({ name: 'exists_on_feed', nullable: true })
+  duration: string;
   existsOnFeed?: boolean;
-
-  @Column({ nullable: false })
   url: string;
-
-  @Column({
-    name: 'media_type',
-    nullable: false,
-  })
   mediaType: string;
-
-  @Column({ name: 'size_bytes', nullable: true })
-  sizeBytes?: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  sizeBytes: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+export interface IEpisodeModel extends Omit<IEpisode, 'id'>, Document {}
+
+export default model<IEpisodeModel>('EpisodeModel', EpisodeSchema, 'episodes');

@@ -1,15 +1,25 @@
-import { getRepository, ILike, Repository } from 'typeorm';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
-import Podcast from '../../schemas/Podcast';
+import PodcastModel, { IPodcast } from '../../schemas/Podcast';
 import IPodcastRepository from '../IPodcastsRepository';
 
-export default class PodcastRepository implements IPodcastRepository {
-  private ormRepository: Repository<Podcast>;
+const DEFAULT_FIELDS = [
+  '_id',
+  'name',
+  'description',
+  'imageUrl',
+  'feedUrl',
+  'websiteUrl',
+  'themeColor',
+  'textColor',
+  'createdAt',
+  'updatedAt',
+];
 
-  constructor() {
-    this.ormRepository = getRepository(Podcast);
+export default class PodcastRepository implements IPodcastRepository {
+  public async save(podcast: IPodcast): Promise<void> {
+    await PodcastModel.updateOne({ _id: podcast.id }, podcast);
   }
 
   public async create({
@@ -20,8 +30,8 @@ export default class PodcastRepository implements IPodcastRepository {
     websiteUrl,
     themeColor,
     textColor,
-  }: ICreatePodcastDTO): Promise<Podcast> {
-    const podcast = this.ormRepository.create({
+  }: ICreatePodcastDTO): Promise<IPodcast> {
+    const podcast = await PodcastModel.create({
       name,
       description,
       imageUrl,
@@ -31,52 +41,59 @@ export default class PodcastRepository implements IPodcastRepository {
       textColor,
     });
 
-    await this.ormRepository.save(podcast);
-
-    return podcast;
+    return podcast.toObject();
   }
 
-  public async save(podcast: Podcast): Promise<void> {
-    await this.ormRepository.save(podcast);
+  public async findAll(): Promise<Array<IPodcast>> {
+    const podcasts = await PodcastModel.find();
+    return podcasts.map(o => o.toObject());
   }
 
-  public async findAll(): Promise<Array<Podcast>> {
-    const podcasts = await this.ormRepository.find({ order: { name: 'ASC' } });
-    return podcasts;
-  }
-
-  public async findByFeedUrl(feedUrl: string): Promise<Podcast | undefined> {
-    const podcast = await this.ormRepository.findOne({
+  public async findByFeedUrl(feedUrl: string): Promise<IPodcast | null> {
+    const podcast = await PodcastModel.findOne({
       feedUrl,
     });
 
-    return podcast;
+    return podcast?.toObject();
+  }
+
+  public async findAllWithoutEpisodes(): Promise<IPodcast[]> {
+    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS).sort({
+      name: 1,
+    });
+
+    return podcasts.map(o => o.toObject());
   }
 
   public async searchAllByName({
     nameToSearch,
-  }: ISearchPodcastDTO): Promise<Podcast[]> {
-    const podcasts = await this.ormRepository.find({
-      where: { name: ILike(`%${nameToSearch}%`) },
-      order: { name: 'ASC' },
+  }: ISearchPodcastDTO): Promise<IPodcast[]> {
+    const podcasts = await PodcastModel.find(
+      {
+        name: new RegExp(`${nameToSearch}`, 'i'),
+      },
+      DEFAULT_FIELDS,
+    ).sort({
+      name: 1,
     });
 
-    return podcasts;
+    return podcasts.map(o => o.toObject());
   }
 
-  public async findTopMostRecent(howMany: number): Promise<Podcast[]> {
-    const podcasts = await this.ormRepository.find({
-      take: howMany,
-      order: { createdAt: 'DESC' },
-    });
+  public async findTopMostRecent(howMany: number): Promise<IPodcast[]> {
+    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS)
+      .sort({
+        createdAt: -1,
+      })
+      .limit(howMany);
 
-    return podcasts;
+    return podcasts.map(o => o.toObject());
   }
 
   public async findById({
     podcastId,
-  }: IFindPodcastByIdDTO): Promise<Podcast | undefined> {
-    const podcast = await this.ormRepository.findOne(podcastId);
-    return podcast;
+  }: IFindPodcastByIdDTO): Promise<IPodcast | null> {
+    const podcast = await PodcastModel.findById(podcastId);
+    return podcast?.toObject();
   }
 }

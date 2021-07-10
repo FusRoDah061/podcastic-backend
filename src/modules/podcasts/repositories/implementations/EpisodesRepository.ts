@@ -1,16 +1,11 @@
-import { Repository, getRepository, ILike } from 'typeorm';
+import { compareAsc, compareDesc } from 'date-fns';
+import { Query } from 'mongoose';
 import ICreateEpisodeDTO from '../../dtos/ICreateEpisodeDTO';
 import IFindAllByPodcastDTO from '../../dtos/IFindAllByPodcastDTO';
-import Episode from '../../schemas/Episode';
+import EpisodeModel, { IEpisode, IEpisodeModel } from '../../schemas/Episode';
 import IEpisodesRepository from '../IEpisodesRepository';
 
 export default class EpisodesRepository implements IEpisodesRepository {
-  private ormRepository: Repository<Episode>;
-
-  constructor() {
-    this.ormRepository = getRepository(Episode);
-  }
-
   public async create({
     podcastId,
     title,
@@ -21,8 +16,8 @@ export default class EpisodesRepository implements IEpisodesRepository {
     url,
     mediaType,
     sizeBytes,
-  }: ICreateEpisodeDTO): Promise<Episode> {
-    const episode = this.ormRepository.create({
+  }: ICreateEpisodeDTO): Promise<IEpisode> {
+    const episode = await EpisodeModel.create({
       podcastId,
       title,
       description,
@@ -34,63 +29,76 @@ export default class EpisodesRepository implements IEpisodesRepository {
       sizeBytes,
     });
 
-    await this.ormRepository.save(episode);
-
-    return episode;
+    return episode.toObject();
   }
 
-  public async save(...episodes: Episode[]): Promise<void> {
-    await this.ormRepository.save(episodes);
+  public async save(...episodes: IEpisode[]): Promise<void> {
+    const promises: Query<any>[] = [];
+
+    episodes.forEach(episode => {
+      promises.push(EpisodeModel.updateMany({ _id: episode.id }, episode));
+    });
+
+    await Promise.all(promises);
   }
 
   public async findAllByPodcast({
     podcastId,
     episodeNameToSearch,
     sort,
-  }: IFindAllByPodcastDTO): Promise<Episode[]> {
-    let order: any;
+  }: IFindAllByPodcastDTO): Promise<IEpisode[]> {
+    let sortFunction: (a: IEpisodeModel, b: IEpisodeModel) => number;
 
     switch (sort) {
       case 'oldest':
-        order = {
-          date: 'ASC',
+        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
+          return compareAsc(a.date, b.date);
         };
         break;
       case 'longest':
-        order = {
-          duration: 'DESC',
+        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
+          if (b.duration === a.duration) return 0;
+
+          if (a.duration > b.duration) {
+            return -1;
+          }
+
+          return 1;
         };
         break;
       case 'shortest':
-        order = {
-          duration: 'ASC',
+        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
+          if (b.duration === a.duration) return 0;
+
+          if (b.duration > a.duration) {
+            return -1;
+          }
+
+          return 1;
         };
         break;
       default:
-        order = {
-          date: 'DESC',
+        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
+          return compareDesc(a.date, b.date);
         };
     }
 
-    let episodes: Episode[];
+    const episodes = await EpisodeModel.find({ podcastId });
 
-    if (episodeNameToSearch) {
-      episodes = await this.ormRepository.find({
-        where: {
-          podcastId,
-          title: ILike(`%${episodeNameToSearch}%`),
-        },
-        order,
-      });
-    } else {
-      episodes = await this.ormRepository.find({
-        where: {
-          podcastId,
-        },
-        order,
-      });
+    if (episodes && episodes.length > 0) {
+      const filteredEpisodes = !episodeNameToSearch
+        ? episodes
+        : episodes.filter(episode => {
+            return episode.title
+              .toLocaleLowerCase()
+              .includes(episodeNameToSearch.toLocaleLowerCase());
+          });
+
+      filteredEpisodes.sort(sortFunction);
+
+      return filteredEpisodes.map(o => o.toObject());
     }
 
-    return episodes;
+    return episodes.map(o => o.toObject());
   }
 }

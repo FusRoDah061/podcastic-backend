@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
 import translate from '../../../shared/utils/translate';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
-import Podcast from '../schemas/Podcast';
+import { IPodcast } from '../schemas/Podcast';
 
 interface IRequestDTO {
   nameToSearch: string;
@@ -18,7 +18,7 @@ export default class SearchPodcastService {
   public async execute(
     { nameToSearch }: IRequestDTO,
     locale: string,
-  ): Promise<Array<Podcast>> {
+  ): Promise<Array<IPodcast>> {
     if (!nameToSearch || !nameToSearch.trim()) {
       throw new AppError(translate('Search text must not be blank.', locale));
     }
