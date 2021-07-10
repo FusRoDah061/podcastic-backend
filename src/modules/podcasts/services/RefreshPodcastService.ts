@@ -155,10 +155,11 @@ export default class RefreshPodcastService {
           // Update the episode
           existingEpisode.title = feedItem.title;
           existingEpisode.description = feedItem.description;
-          existingEpisode.date = feedItem.date ?? new Date();
-          existingEpisode.image = feedItem.image ?? existingPodcast.imageUrl;
+          existingEpisode.date = feedItem.date ?? existingEpisode.date;
+          existingEpisode.image =
+            feedItem.image ?? existingEpisode.image ?? existingPodcast.imageUrl;
           existingEpisode.duration = audioDuration as string;
-          existingEpisode.url = audioFile.url;
+          existingEpisode.url = audioFile.url ?? existingEpisode.url;
           existingEpisode.mediaType = audioFile.mediaType ?? 'audio/mpeg';
           existingEpisode.sizeBytes = Number(audioFile.length ?? 0);
 
