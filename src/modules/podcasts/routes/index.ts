@@ -15,7 +15,19 @@ const episodesController = new EpisodesController();
 const podcastsController = new PodcastsController();
 const randomEpisodeController = new RandomEpisodeController();
 
-router.get('/', allPodcastsController.index);
+const paginationValidation = {
+  page: Joi.number().optional().allow(''),
+  pageSize: Joi.number().optional().allow(''),
+};
+
+router.get(
+  '/',
+  celebrate({
+    [Segments.QUERY]: paginationValidation,
+  }),
+  allPodcastsController.index,
+);
+
 router.get('/recent', recentPodcastsController.index);
 
 router.get(
@@ -23,6 +35,7 @@ router.get(
   celebrate({
     [Segments.QUERY]: {
       q: Joi.string().required(),
+      ...paginationValidation,
     },
   }),
   searchPodcastsController.list,
@@ -50,6 +63,7 @@ router.get(
         .empty('')
         .default('newest'),
       q: Joi.string().optional().allow(''),
+      ...paginationValidation,
     },
   }),
   episodesController.index,

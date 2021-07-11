@@ -1,9 +1,12 @@
 import { compareAsc, compareDesc } from 'date-fns';
 import { Query } from 'mongoose';
+import buildPaginatedResponse from '../../../../shared/infra/mongoose/helpers/buildPaginatedResponse';
+import { IPaginatedResponse } from '../../../../shared/routes';
 import ICreateEpisodeDTO from '../../dtos/ICreateEpisodeDTO';
 import IFindAllByPodcastDTO from '../../dtos/IFindAllByPodcastDTO';
 import EpisodeModel, { IEpisode, IEpisodeModel } from '../../schemas/Episode';
 import IEpisodesRepository from '../IEpisodesRepository';
+import { IPagination } from '../IPodcastsRepository';
 
 export default class EpisodesRepository implements IEpisodesRepository {
   public async create({
@@ -42,63 +45,41 @@ export default class EpisodesRepository implements IEpisodesRepository {
     await Promise.all(promises);
   }
 
-  public async findAllByPodcast({
-    podcastId,
-    episodeNameToSearch,
-    sort,
-  }: IFindAllByPodcastDTO): Promise<IEpisode[]> {
-    let sortFunction: (a: IEpisodeModel, b: IEpisodeModel) => number;
+  public async findAllByPodcast(
+    { podcastId, episodeNameToSearch, sort }: IFindAllByPodcastDTO,
+    pagination: IPagination,
+  ): Promise<IPaginatedResponse<IEpisode>> {
+    const { page, pageSize } = pagination;
+    let querySort: Record<string, number>;
 
     switch (sort) {
       case 'oldest':
-        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
-          return compareAsc(a.date, b.date);
-        };
+        querySort = { date: 1 };
         break;
       case 'longest':
-        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
-          if (b.duration === a.duration) return 0;
-
-          if (a.duration > b.duration) {
-            return -1;
-          }
-
-          return 1;
-        };
+        querySort = { duration: -1 };
         break;
       case 'shortest':
-        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
-          if (b.duration === a.duration) return 0;
+        querySort = { duration: 1 };
 
-          if (b.duration > a.duration) {
-            return -1;
-          }
-
-          return 1;
-        };
         break;
       default:
-        sortFunction = (a: IEpisodeModel, b: IEpisodeModel) => {
-          return compareDesc(a.date, b.date);
-        };
+        // newest
+        querySort = { date: -1 };
     }
 
-    const episodes = await EpisodeModel.find({ podcastId });
+    const episodesPage = await EpisodeModel.paginate(
+      {
+        title: new RegExp(`${episodeNameToSearch}`, 'i'),
+        podcastId,
+      },
+      {
+        limit: pageSize,
+        page,
+        sort: querySort,
+      },
+    );
 
-    if (episodes && episodes.length > 0) {
-      const filteredEpisodes = !episodeNameToSearch
-        ? episodes
-        : episodes.filter(episode => {
-            return episode.title
-              .toLocaleLowerCase()
-              .includes(episodeNameToSearch.toLocaleLowerCase());
-          });
-
-      filteredEpisodes.sort(sortFunction);
-
-      return filteredEpisodes.map(o => o.toObject());
-    }
-
-    return episodes.map(o => o.toObject());
+    return buildPaginatedResponse(episodesPage);
   }
 }

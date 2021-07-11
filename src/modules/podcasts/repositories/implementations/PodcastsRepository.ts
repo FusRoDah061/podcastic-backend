@@ -1,11 +1,15 @@
+import buildPaginatedResponse from '../../../../shared/infra/mongoose/helpers/buildPaginatedResponse';
+import {
+  DEFAULT_PAGE_SIZE,
+  IPaginatedResponse,
+} from '../../../../shared/routes';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
 import PodcastModel, { IPodcast } from '../../schemas/Podcast';
-import IPodcastRepository from '../IPodcastsRepository';
+import IPodcastsRepository, { IPagination } from '../IPodcastsRepository';
 
 const DEFAULT_FIELDS = [
-  '_id',
   'name',
   'description',
   'imageUrl',
@@ -15,9 +19,11 @@ const DEFAULT_FIELDS = [
   'textColor',
   'createdAt',
   'updatedAt',
+  'isServiceAvailable',
+  'lastSuccessfulHealthcheckAt',
 ];
 
-export default class PodcastRepository implements IPodcastRepository {
+export default class PodcastRepository implements IPodcastsRepository {
   public async save(podcast: IPodcast): Promise<void> {
     await PodcastModel.updateOne({ _id: podcast.id }, podcast);
   }
@@ -44,9 +50,20 @@ export default class PodcastRepository implements IPodcastRepository {
     return podcast.toObject();
   }
 
-  public async findAll(): Promise<Array<IPodcast>> {
-    const podcasts = await PodcastModel.find();
-    return podcasts.map(o => o.toObject());
+  public async findAll(
+    pagination: IPagination,
+  ): Promise<IPaginatedResponse<IPodcast>> {
+    const { page, pageSize } = pagination;
+
+    const podcastsPage = await PodcastModel.paginate(
+      {},
+      {
+        limit: pageSize,
+        page,
+      },
+    );
+
+    return buildPaginatedResponse(podcastsPage);
   }
 
   public async findByFeedUrl(feedUrl: string): Promise<IPodcast | null> {
@@ -57,27 +74,26 @@ export default class PodcastRepository implements IPodcastRepository {
     return podcast?.toObject();
   }
 
-  public async findAllWithoutEpisodes(): Promise<IPodcast[]> {
-    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS).sort({
-      name: 1,
-    });
+  public async searchAllByName(
+    { nameToSearch }: ISearchPodcastDTO,
+    pagination: IPagination,
+  ): Promise<IPaginatedResponse<IPodcast>> {
+    const { page, pageSize } = pagination;
 
-    return podcasts.map(o => o.toObject());
-  }
-
-  public async searchAllByName({
-    nameToSearch,
-  }: ISearchPodcastDTO): Promise<IPodcast[]> {
-    const podcasts = await PodcastModel.find(
+    const podcastsPage = await PodcastModel.paginate(
       {
         name: new RegExp(`${nameToSearch}`, 'i'),
       },
-      DEFAULT_FIELDS,
-    ).sort({
-      name: 1,
-    });
+      {
+        limit: pageSize,
+        page,
+        sort: {
+          name: 1,
+        },
+      },
+    );
 
-    return podcasts.map(o => o.toObject());
+    return buildPaginatedResponse(podcastsPage);
   }
 
   public async findTopMostRecent(howMany: number): Promise<IPodcast[]> {

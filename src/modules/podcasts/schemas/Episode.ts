@@ -1,4 +1,5 @@
 import { Document, model } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
 import BaseSchema from '../../../shared/infra/mongoose/helpers/BaseSchema';
 
 export const EpisodeSchema = new BaseSchema(
@@ -50,6 +51,8 @@ export const EpisodeSchema = new BaseSchema(
   },
 );
 
+EpisodeSchema.plugin(mongoosePaginate);
+
 export interface IEpisode {
   id: string;
   podcastId: string;
@@ -68,4 +71,4 @@ export interface IEpisode {
 
 export interface IEpisodeModel extends Omit<IEpisode, 'id'>, Document {}
 
-export default model<IEpisodeModel>('EpisodeModel', EpisodeSchema, 'episodes');
+export default model('EpisodeModel', EpisodeSchema, 'episodes');

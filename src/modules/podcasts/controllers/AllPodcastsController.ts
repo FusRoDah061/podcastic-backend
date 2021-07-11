@@ -5,9 +5,14 @@ import ListPodcastsService from '../services/ListPodcastsService';
 
 export default class AllPodcastsController {
   public async index(request: Request, response: Response): Promise<Response> {
+    const { page, pageSize } = request.query;
+
     const listPodcastsService = container.resolve(ListPodcastsService);
 
-    const podcasts = await listPodcastsService.execute();
+    const podcasts = await listPodcastsService.execute({
+      page: Number(page),
+      pageSize: Number(pageSize),
+    });
 
     return response.json(podcasts);
   }

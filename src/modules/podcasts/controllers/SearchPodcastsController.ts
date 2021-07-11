@@ -4,7 +4,7 @@ import SearchPodcastService from '../services/SearchPodcastService';
 
 export default class SearchPodcastsController {
   public async list(request: Request, response: Response): Promise<Response> {
-    const { q } = request.query;
+    const { q, page, pageSize } = request.query;
     const { locale } = response;
 
     const searchPodcastService = container.resolve(SearchPodcastService);
@@ -12,6 +12,10 @@ export default class SearchPodcastsController {
     const podcasts = await searchPodcastService.execute(
       {
         nameToSearch: q as string,
+      },
+      {
+        page: Number(page),
+        pageSize: Number(pageSize),
       },
       locale,
     );

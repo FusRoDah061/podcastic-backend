@@ -5,7 +5,7 @@ import ListEpisodesService from '../services/ListEpisodesService';
 export default class EpisodesController {
   public async index(request: Request, response: Response): Promise<Response> {
     const { podcastId } = request.params;
-    const { sort, q } = request.query;
+    const { sort, q, page, pageSize } = request.query;
     const { locale } = response;
 
     const listEpisodesService = container.resolve(ListEpisodesService);
@@ -15,6 +15,10 @@ export default class EpisodesController {
         podcastId,
         sort: sort?.toString(),
         episodeNameToSearch: q?.toString(),
+      },
+      {
+        page: Number(page),
+        pageSize: Number(pageSize),
       },
       locale,
     );

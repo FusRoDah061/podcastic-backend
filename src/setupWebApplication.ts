@@ -5,6 +5,7 @@ import i18n from 'i18n';
 import routes from './shared/routes';
 import errorHandler from './shared/middlewares/errorHandler';
 import localeConfig from './config/localeConfig';
+import paginationValidator from './shared/middlewares/paginationValidator';
 
 export default function setupWebApplication(): void {
   console.log('Setting up express application...');
@@ -16,6 +17,8 @@ export default function setupWebApplication(): void {
   app.use(cors());
   app.use(express.json());
   app.use(i18n.init);
+
+  app.use(paginationValidator);
   app.use(routes);
 
   // Handles celebrate validation errors

@@ -1,7 +1,6 @@
 import { Document, model } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
 import BaseSchema from '../../../shared/infra/mongoose/helpers/BaseSchema';
-
-// TODO: https://stackoverflow.com/questions/7034848/mongodb-output-id-instead-of-id
 
 export const PodcastSchema = new BaseSchema(
   {
@@ -51,6 +50,8 @@ export const PodcastSchema = new BaseSchema(
   },
 );
 
+PodcastSchema.plugin(mongoosePaginate);
+
 export interface IPodcast {
   id: string;
   name: string;
@@ -68,4 +69,4 @@ export interface IPodcast {
 
 export interface IPodcastModel extends Omit<IPodcast, 'id'>, Document {}
 
-export default model<IPodcastModel>('PodcastModel', PodcastSchema, 'podcasts');
+export default model('PodcastModel', PodcastSchema, 'podcasts');

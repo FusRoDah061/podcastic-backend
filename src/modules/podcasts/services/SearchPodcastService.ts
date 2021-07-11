@@ -1,7 +1,10 @@
 import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
+import { IPaginatedResponse } from '../../../shared/routes';
 import translate from '../../../shared/utils/translate';
-import IPodcastRepository from '../repositories/IPodcastsRepository';
+import IPodcastRepository, {
+  IPagination,
+} from '../repositories/IPodcastsRepository';
 import { IPodcast } from '../schemas/Podcast';
 
 interface IRequestDTO {
@@ -17,15 +20,19 @@ export default class SearchPodcastService {
 
   public async execute(
     { nameToSearch }: IRequestDTO,
+    pagination: IPagination,
     locale: string,
-  ): Promise<Array<IPodcast>> {
+  ): Promise<IPaginatedResponse<IPodcast>> {
     if (!nameToSearch || !nameToSearch.trim()) {
       throw new AppError(translate('Search text must not be blank.', locale));
     }
 
-    const podcasts = await this.podcastRepository.searchAllByName({
-      nameToSearch,
-    });
+    const podcasts = await this.podcastRepository.searchAllByName(
+      {
+        nameToSearch,
+      },
+      pagination,
+    );
 
     return podcasts;
   }

@@ -1,5 +1,8 @@
 import { inject, injectable } from 'tsyringe';
-import IPodcastRepository from '../repositories/IPodcastsRepository';
+import { IPaginatedResponse } from '../../../shared/routes';
+import IPodcastRepository, {
+  IPagination,
+} from '../repositories/IPodcastsRepository';
 import { IPodcast } from '../schemas/Podcast';
 
 @injectable()
@@ -9,8 +12,10 @@ export default class ListPodcastService {
     private podcastRepository: IPodcastRepository,
   ) {}
 
-  public async execute(): Promise<Array<IPodcast>> {
-    const podcasts = await this.podcastRepository.findAll();
+  public async execute(
+    pagination: IPagination,
+  ): Promise<IPaginatedResponse<IPodcast>> {
+    const podcasts = await this.podcastRepository.findAll(pagination);
 
     return podcasts;
   }
