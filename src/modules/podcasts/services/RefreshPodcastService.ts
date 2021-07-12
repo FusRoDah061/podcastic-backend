@@ -98,9 +98,9 @@ export default class RefreshPodcastService {
       console.log(LOG_TAG, 'Fetching existing episodes.');
 
       const newPodcastEpisodes: Array<IEpisode> = [];
-      const episodes = await this.episodesRepository.findAllByPodcast({
-        podcastId: existingPodcast.id,
-      });
+      const episodes = await this.episodesRepository.findAllByPodcast(
+        existingPodcast.id,
+      );
 
       const promiseList: Array<Promise<any>> = [];
 
