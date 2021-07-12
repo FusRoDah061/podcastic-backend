@@ -45,7 +45,7 @@ export default class EpisodesRepository implements IEpisodesRepository {
     await Promise.all(promises);
   }
 
-  public async findAllByPodcast(
+  public async findByPodcast(
     { podcastId, episodeNameToSearch, sort }: IFindAllByPodcastDTO,
     pagination: IPagination,
   ): Promise<IPaginatedResponse<IEpisode>> {
@@ -81,5 +81,13 @@ export default class EpisodesRepository implements IEpisodesRepository {
     );
 
     return buildPaginatedResponse(episodesPage);
+  }
+
+  public async findAllByPodcast(podcastId: string): Promise<IEpisode[]> {
+    const episodes = await EpisodeModel.find({
+      podcastId,
+    });
+
+    return episodes;
   }
 }

@@ -31,9 +31,7 @@ export default class RandomEpisodeService {
       throw new AppError(translate('Podcast does not exist.', locale));
     }
 
-    const episodes = await this.episodesRepository.findAllByPodcast({
-      podcastId,
-    });
+    const episodes = await this.episodesRepository.findAllByPodcast(podcastId);
 
     const availableEpisodes = episodes.filter(episode => episode.existsOnFeed);
 

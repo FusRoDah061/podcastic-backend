@@ -35,7 +35,7 @@ export default class ListEpisodesService {
       throw new AppError(translate('Podcast does not exist.', locale));
     }
 
-    const episodes = await this.episodesRepository.findAllByPodcast(
+    const episodes = await this.episodesRepository.findByPodcast(
       {
         podcastId,
         sort,
