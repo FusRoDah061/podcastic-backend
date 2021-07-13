@@ -51,6 +51,7 @@ export default class AddPodcastService {
       message: {
         feedUrl,
       },
+      allowRetry: true,
     });
   }
 }

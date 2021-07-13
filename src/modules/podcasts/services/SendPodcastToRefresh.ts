@@ -24,6 +24,7 @@ export default class SendPodcastToRefresh {
           message: {
             feedUrl: podcast.feedUrl,
           },
+          allowRetry: true,
         }),
       );
     });

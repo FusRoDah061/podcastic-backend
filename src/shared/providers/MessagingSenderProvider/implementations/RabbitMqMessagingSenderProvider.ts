@@ -5,7 +5,11 @@ import IMessagingSenderProvider from '../models/IMessagingSenderProvider';
 
 export default class RabbitMqMessagingSenderProvider
   implements IMessagingSenderProvider {
-  async post({ queueName, message }: IMessagingPostDTO): Promise<void> {
+  async post({
+    queueName,
+    message,
+    allowRetry,
+  }: IMessagingPostDTO): Promise<void> {
     console.log(
       'Creating channel with RabbitMQ using url ',
       messagingConfig.config.rabbit.url,
@@ -20,7 +24,11 @@ export default class RabbitMqMessagingSenderProvider
 
     console.log('Posting o queue ', queueName);
 
-    await channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
+    await channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)), {
+      headers: {
+        'x-allow-retry': allowRetry ?? false,
+      },
+    });
 
     await channel.close();
     await connection.close();

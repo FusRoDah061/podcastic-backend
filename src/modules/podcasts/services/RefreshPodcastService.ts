@@ -4,6 +4,7 @@ import IFeed from '../../../shared/providers/FeedParserProvider/dtos/IFeed';
 import IFeedParserProvider from '../../../shared/providers/FeedParserProvider/models/IFeedParserProvider';
 import formatDuration from '../../../shared/utils/formatDuration';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
+import RecoverableError from '../errors/RecoverableError';
 import IEpisodesRepository from '../repositories/IEpisodesRepository';
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 import { IEpisode } from '../schemas/Episode';
@@ -45,7 +46,9 @@ export default class RefreshPodcastService {
         await this.podcastsRepository.save(podcast);
       } else {
         // If the podcast doesn't exist, we throw an error so that the message consumption is rolled back to be reprocessed later
-        throw new Error(`Error checking feed ${feedUrl}`);
+        throw new RecoverableError(
+          `Recoverable error checking feed ${feedUrl}`,
+        );
       }
     }
 
@@ -57,7 +60,7 @@ export default class RefreshPodcastService {
       feed = await this.feedParserProvider.parse(feedUrl);
     } catch (err) {
       console.error(LOG_TAG, `Error reading feed: `, err);
-      throw new Error(`Error reading feed ${feedUrl}`);
+      throw new Error(`Fatal error reading feed ${feedUrl}`);
     }
 
     if (!podcast) {

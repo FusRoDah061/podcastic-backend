@@ -7,6 +7,7 @@ interface IMessagingConfig {
     };
     maxConcurrent: number;
     requeueAfterTime: number;
+    maxRetries: number;
   };
 }
 
@@ -23,6 +24,7 @@ const config = {
     },
     maxConcurrent: Number(process.env.MESSAGING_MAX_CONCURRENT_MESSAGES ?? 5),
     requeueAfterTime: Number(process.env.MESSAGING_REQUEUE_AFTER),
+    maxRetries: 10,
   },
 } as IMessagingConfig;
 

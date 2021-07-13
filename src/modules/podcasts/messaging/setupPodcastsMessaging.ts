@@ -2,6 +2,7 @@ import { container } from 'tsyringe';
 import messagingConfig from '../../../config/messagingConfig';
 import IMessagingConsumerProvider from '../../../shared/providers/MessagingConsumerProvider/models/IMessagingConsumerProvider';
 import IPodcastQueueMessage from '../dtos/IPodcastQueueMessage';
+import RecoverableError from '../errors/RecoverableError';
 import RefreshPodcastService from '../services/RefreshPodcastService';
 
 export default function setupPodcastsMessaging(): void {
@@ -14,6 +15,8 @@ export default function setupPodcastsMessaging(): void {
   messagingConsumer.setMaxConcurrent(messagingConfig.config.maxConcurrent);
 
   messagingConsumer.setRequeueAfter(messagingConfig.config.requeueAfterTime);
+
+  messagingConsumer.setMaxRetryCount(messagingConfig.config.maxRetries);
 
   messagingConsumer.consume({
     queueName: messagingConfig.queueNames.podcasts,
@@ -32,9 +35,20 @@ export default function setupPodcastsMessaging(): void {
       try {
         await refreshPodcastService.execute(parsedMessage);
       } catch (err) {
-        // We don't throw an error because we want the message to be consumed, otherwise it will always end up here.
-        // If it is a legit feed address, but it's temporarily unavailable, the user can add it again.
-        // The healthchek during the add podcast request should prevent this, though.
+        if (err instanceof RecoverableError) {
+          // Raise error so that the message is sent back to the queue
+          console.info(
+            'Got RecoverableError, so the message will be retried later.',
+          );
+          throw err;
+        } else {
+          console.info(
+            'Got a fatal error. ACK will be sent, so the message will be dropped completely.',
+          );
+          // We don't throw an error because we want the message to be consumed, otherwise it will always end up here.
+          // If it is a legit feed address, but it's temporarily unavailable, the user can add it again.
+          // The healthchek during the add podcast request should prevent this, though.
+        }
       }
     },
   });
