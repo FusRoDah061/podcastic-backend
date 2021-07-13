@@ -131,9 +131,12 @@ export default class RefreshPodcastService {
           if (audioDuration.length < 5) {
             // If it's M:SS
             audioDuration = `00:${audioDuration.padStart(5, '0')}`;
-          } else if (audioDuration.length < 8) {
+          } else if (audioDuration.length < 7) {
             // If it's MM:SS
             audioDuration = `00:${audioDuration}`;
+          } else if (audioDuration.length < 8) {
+            // If it's H:MM:SS
+            audioDuration = `0${audioDuration}`;
           }
         }
 
