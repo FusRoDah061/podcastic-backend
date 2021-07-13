@@ -15,7 +15,7 @@ export default class ListPodcastService {
   public async execute(
     pagination: IPagination,
   ): Promise<IPaginatedResponse<IPodcast>> {
-    const podcasts = await this.podcastRepository.findAll(pagination);
+    const podcasts = await this.podcastRepository.find(pagination);
 
     return podcasts;
   }

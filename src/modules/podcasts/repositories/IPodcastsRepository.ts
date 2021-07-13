@@ -12,7 +12,8 @@ export interface IPagination {
 export default interface IPodcastRepository {
   create(data: ICreatePodcastDTO): Promise<IPodcast>;
   save(podcast: IPodcast): Promise<void>;
-  findAll(pagination: IPagination): Promise<IPaginatedResponse<IPodcast>>;
+  find(pagination: IPagination): Promise<IPaginatedResponse<IPodcast>>;
+  findAll(): Promise<IPodcast[]>;
   findByFeedUrl(feedUrl: string): Promise<IPodcast | null>;
   searchAllByName(
     data: ISearchPodcastDTO,

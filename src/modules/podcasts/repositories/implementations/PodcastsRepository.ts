@@ -50,7 +50,7 @@ export default class PodcastRepository implements IPodcastsRepository {
     return podcast.toObject();
   }
 
-  public async findAll(
+  public async find(
     pagination: IPagination,
   ): Promise<IPaginatedResponse<IPodcast>> {
     const { page, pageSize } = pagination;
@@ -64,6 +64,12 @@ export default class PodcastRepository implements IPodcastsRepository {
     );
 
     return buildPaginatedResponse(podcastsPage);
+  }
+
+  public async findAll(): Promise<IPodcast[]> {
+    const podcasts = await PodcastModel.find();
+
+    return podcasts;
   }
 
   public async findByFeedUrl(feedUrl: string): Promise<IPodcast | null> {
