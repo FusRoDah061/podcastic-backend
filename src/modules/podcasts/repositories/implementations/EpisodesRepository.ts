@@ -1,10 +1,9 @@
-import { compareAsc, compareDesc } from 'date-fns';
 import { Query } from 'mongoose';
 import buildPaginatedResponse from '../../../../shared/infra/mongoose/helpers/buildPaginatedResponse';
 import { IPaginatedResponse } from '../../../../shared/routes';
 import ICreateEpisodeDTO from '../../dtos/ICreateEpisodeDTO';
 import IFindAllByPodcastDTO from '../../dtos/IFindAllByPodcastDTO';
-import EpisodeModel, { IEpisode, IEpisodeModel } from '../../schemas/Episode';
+import EpisodeModel, { IEpisode } from '../../schemas/Episode';
 import IEpisodesRepository from '../IEpisodesRepository';
 import { IPagination } from '../IPodcastsRepository';
 

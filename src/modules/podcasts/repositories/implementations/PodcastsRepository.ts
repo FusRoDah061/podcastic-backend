@@ -1,8 +1,5 @@
 import buildPaginatedResponse from '../../../../shared/infra/mongoose/helpers/buildPaginatedResponse';
-import {
-  DEFAULT_PAGE_SIZE,
-  IPaginatedResponse,
-} from '../../../../shared/routes';
+import { IPaginatedResponse } from '../../../../shared/routes';
 import ICreatePodcastDTO from '../../dtos/ICreatePodcastDTO';
 import IFindPodcastByIdDTO from '../../dtos/IFindPodcastByIdDTO';
 import ISearchPodcastDTO from '../../dtos/ISearchPodcastDTO';
