@@ -88,6 +88,6 @@ export default class EpisodesRepository implements IEpisodesRepository {
       podcastId,
     });
 
-    return episodes;
+    return episodes.map(o => o.toObject());
   }
 }
