@@ -131,39 +131,6 @@ export default class RabbitMqMessagingConsumerProvider
     });
   }
 
-  private async routeDlqQueue(
-    queueName: string,
-    channel: Channel,
-  ): Promise<void> {
-    const mainExchange = `${queueName}Exchange`;
-    const mainDlq = `${queueName}DLQ`;
-
-    await channel.consume(mainDlq, async message => {
-      if (message) {
-        const retryCount = message.properties.headers['x-retry-count']
-          ? message.properties.headers['x-retry-count']
-          : 1;
-
-        console.log(
-          'Got message from DLQ. Headers: ',
-          message.properties.headers,
-        );
-
-        if (retryCount <= this.maxRetry) {
-          // Publish message to the main queue again
-          channel.publish(mainExchange, '', Buffer.from(message.content), {
-            headers: {
-              'x-allow-retry': message.properties.headers['x-allow-retry'],
-              'x-retry-count': message.properties.headers['x-retry-count'],
-            },
-          });
-        }
-
-        channel.ack(message);
-      }
-    });
-  }
-
   public async consume({
     queueName,
     callback,
