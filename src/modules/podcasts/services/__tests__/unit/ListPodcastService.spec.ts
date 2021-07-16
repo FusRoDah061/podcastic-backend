@@ -1,10 +1,9 @@
 import 'reflect-metadata';
 import i18n from 'i18n';
-import localeConfig from '../../../config/localeConfig';
-import AppError from '../../../shared/errors/AppError';
-
-import FakePodcastRepository from '../repositories/fakes/FakePodcastRepository';
-import ListPodcastService from './ListPodcastService';
+import localeConfig from '../../../../../config/localeConfig';
+import AppError from '../../../../../shared/errors/AppError';
+import FakePodcastRepository from '../../../repositories/fakes/FakePodcastRepository';
+import ListPodcastService from '../../ListPodcastService';
 
 let fakePodcastRepository: FakePodcastRepository;
 let listPodcast: ListPodcastService;

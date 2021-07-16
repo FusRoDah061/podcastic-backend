@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import i18n from 'i18n';
-import localeConfig from '../../../config/localeConfig';
-import AppError from '../../../shared/errors/AppError';
+import localeConfig from '../../../../../config/localeConfig';
+import AppError from '../../../../../shared/errors/AppError';
 
-import FakeFeedHealthcheckProvider from '../../../shared/providers/FeedHealthcheckProvider/fakes/FakeFeedHealthcheckProvider';
-import FakeMessagingSenderProvider from '../../../shared/providers/MessagingSenderProvider/fakes/FakeMessagingSenderProvider';
-import FakePodcastRepository from '../repositories/fakes/FakePodcastRepository';
-import AddPodcastService from './AddPodcastService';
+import FakeFeedHealthcheckProvider from '../../../../../shared/providers/FeedHealthcheckProvider/fakes/FakeFeedHealthcheckProvider';
+import FakeMessagingSenderProvider from '../../../../../shared/providers/MessagingSenderProvider/fakes/FakeMessagingSenderProvider';
+import FakePodcastRepository from '../../../repositories/fakes/FakePodcastRepository';
+import AddPodcastService from '../../AddPodcastService';
 
 let fakePodcastRepository: FakePodcastRepository;
 let fakeMessagingSenderProvider: FakeMessagingSenderProvider;
