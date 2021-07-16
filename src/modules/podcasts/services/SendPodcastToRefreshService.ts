@@ -4,7 +4,7 @@ import IMessagingSenderProvider from '../../../shared/providers/MessagingSenderP
 import IPodcastRepository from '../repositories/IPodcastsRepository';
 
 @injectable()
-export default class SendPodcastToRefresh {
+export default class SendPodcastToRefreshService {
   constructor(
     @inject('MessagingSenderProvider')
     private messagingSenderProvider: IMessagingSenderProvider,

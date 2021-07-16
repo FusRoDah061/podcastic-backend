@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { container } from 'tsyringe';
-import SendPodcastToRefresh from '../services/SendPodcastToRefresh';
+import SendPodcastToRefreshService from '../services/SendPodcastToRefreshService';
 
 export default function setupPodcastRefereshJob(): void {
   console.log('Setting up podcast refresh job...');
@@ -10,7 +10,7 @@ export default function setupPodcastRefereshJob(): void {
   if (cron.validate(cronExpression)) {
     cron.schedule(cronExpression, async () => {
       const sendPodcastsToRefreshService = container.resolve(
-        SendPodcastToRefresh,
+        SendPodcastToRefreshService,
       );
 
       try {

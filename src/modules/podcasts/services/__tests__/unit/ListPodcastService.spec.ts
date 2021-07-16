@@ -8,7 +8,7 @@ import ListPodcastService from '../../ListPodcastService';
 let fakePodcastRepository: FakePodcastRepository;
 let listPodcast: ListPodcastService;
 
-describe('AddPodcast', () => {
+describe('ListPodcast', () => {
   beforeAll(() => {
     i18n.configure(localeConfig);
   });
