@@ -6,7 +6,7 @@ import IPodcastRepository, {
 import { IPodcast } from '../schemas/Podcast';
 
 @injectable()
-export default class ListPodcastService {
+export default class ListPodcastsService {
   constructor(
     @inject('PodcastRepository')
     private podcastRepository: IPodcastRepository,

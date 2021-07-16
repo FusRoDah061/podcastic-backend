@@ -10,7 +10,7 @@ export default class EpisodesController {
 
     const listEpisodesService = container.resolve(ListEpisodesService);
 
-    const podcastWithEpisodes = await listEpisodesService.execute(
+    const episodes = await listEpisodesService.execute(
       {
         podcastId,
         sort: sort?.toString(),
@@ -23,6 +23,6 @@ export default class EpisodesController {
       locale,
     );
 
-    return response.json(podcastWithEpisodes);
+    return response.json(episodes);
   }
 }
