@@ -25,8 +25,8 @@ const podcasts: IPodcast[] = [];
 
 export default class FakePodcastRepository implements IPodcastsRepository {
   public async save(podcast: IPodcast): Promise<void> {
-    // TODO: Mock
-    await PodcastModel.updateOne({ _id: podcast.id }, podcast);
+    const index = podcasts.findIndex(p => p.id === podcast.id);
+    podcasts[index] = podcast;
   }
 
   public async create({
@@ -61,18 +61,15 @@ export default class FakePodcastRepository implements IPodcastsRepository {
   public async find(
     pagination: IPagination,
   ): Promise<IPaginatedResponse<IPodcast>> {
-    // TODO: Mock
-    const { page, pageSize } = pagination;
-
-    const podcastsPage = await PodcastModel.paginate(
-      {},
-      {
-        limit: pageSize,
-        page,
-      },
-    );
-
-    return buildPaginatedResponse(podcastsPage);
+    return {
+      data: [],
+      hasNextPage: false,
+      hasPreviousPage: false,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      totalPages: 0,
+      totalResults: 0,
+    };
   }
 
   public async findAll(): Promise<IPodcast[]> {
@@ -89,34 +86,27 @@ export default class FakePodcastRepository implements IPodcastsRepository {
     { nameToSearch }: ISearchPodcastDTO,
     pagination: IPagination,
   ): Promise<IPaginatedResponse<IPodcast>> {
-    // TODO: Mock
-    const { page, pageSize } = pagination;
-
-    const podcastsPage = await PodcastModel.paginate(
-      {
-        name: new RegExp(`${nameToSearch}`, 'i'),
-      },
-      {
-        limit: pageSize,
-        page,
-        sort: {
-          name: 1,
+    return {
+      data: [
+        {
+          id: faker.datatype.hexaDecimal(24),
+          name: nameToSearch,
+          description: '',
+          imageUrl: '',
+          feedUrl: '',
         },
-      },
-    );
-
-    return buildPaginatedResponse(podcastsPage);
+      ],
+      hasNextPage: false,
+      hasPreviousPage: false,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      totalPages: 0,
+      totalResults: 0,
+    };
   }
 
   public async findTopMostRecent(howMany: number): Promise<IPodcast[]> {
-    // TODO: Mock
-    const podcasts = await PodcastModel.find({}, DEFAULT_FIELDS)
-      .sort({
-        createdAt: -1,
-      })
-      .limit(howMany);
-
-    return podcasts.map(o => o.toObject());
+    return podcasts.splice(0, howMany);
   }
 
   public async findById({
