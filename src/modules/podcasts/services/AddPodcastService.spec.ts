@@ -45,7 +45,7 @@ describe('AddPodcast', () => {
   it('should not add a podcast that already exists', async () => {
     const feedUrl = fakeFeedHealthcheckProvider.VALID_URL;
 
-    fakePodcastRepository.create({
+    await fakePodcastRepository.create({
       name: 'Test podcast',
       description: 'Test podcast',
       feedUrl,
