@@ -37,7 +37,11 @@ export default class FindDominantColorService {
       pallete.Vibrant?.hex.toUpperCase(),
     ];
 
-    fs.unlinkSync(imageFile.path);
+    try {
+      fs.unlinkSync(imageFile.path);
+    } catch (err) {
+      console.warn(`Could not delete downloaded file "${imageFile.path}"`);
+    }
 
     if (colors.length > 0) {
       const bestContrastWithBlack = getBestContrastColor(
