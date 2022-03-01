@@ -4,5 +4,6 @@
 	"Search text must not be blank.": "Texto para buscar não pode estar em branco.",
 	"Podcast already exists.": "Podcast já existe.",
 	"An unexpected error ocurred while processing the request.": "Ocorreu um erro inesperado no processamento da solicitação.",
-  "Email address already in use.": "O endereço de e-mail já está em uso."
+  "Email address already in use.": "O endereço de e-mail já está em uso.",
+  "Incorrect email/password combination.": "Combinação de e-mail e senha incorreta."
 }
