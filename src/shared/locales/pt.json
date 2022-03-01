@@ -3,5 +3,6 @@
 	"Podcast does not exist.": "O podcast não existe.",
 	"Search text must not be blank.": "Texto para buscar não pode estar em branco.",
 	"Podcast already exists.": "Podcast já existe.",
-	"An unexpected error ocurred while processing the request.": "Ocorreu um erro inesperado no processamento da solicitação."
+	"An unexpected error ocurred while processing the request.": "Ocorreu um erro inesperado no processamento da solicitação.",
+  "Email address already in use.": "O endereço de e-mail já está em uso."
 }
