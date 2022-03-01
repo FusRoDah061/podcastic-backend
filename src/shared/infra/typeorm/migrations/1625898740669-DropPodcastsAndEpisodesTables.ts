@@ -3,10 +3,8 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 export default class DropPodcastsAndEpisodesTables1625898740669
   implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await Promise.all([
-      queryRunner.dropTable('podcasts'),
-      queryRunner.dropTable('episodes'),
-    ]);
+    await queryRunner.dropTable('episodes', true, true, true)
+    await queryRunner.dropTable('podcasts', true, true, true)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
