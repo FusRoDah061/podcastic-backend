@@ -44,12 +44,10 @@ export default class RefreshPodcastService {
         podcast.isServiceAvailable = false;
 
         await this.podcastsRepository.save(podcast);
-      } else {
-        // If the podcast doesn't exist, we throw an error so that the message consumption is rolled back to be reprocessed later
-        throw new RecoverableError(
-          `Recoverable error checking feed ${feedUrl}`,
-        );
       }
+
+      // If the podcast doesn't exist, we throw an error so that the message consumption is rolled back to be reprocessed later
+      throw new RecoverableError(`Recoverable error checking feed ${feedUrl}`);
     }
 
     console.log(LOG_TAG, 'Parsing feed');
@@ -70,7 +68,7 @@ export default class RefreshPodcastService {
         name: feed.name,
         description: feed.description,
         imageUrl: feed.image,
-        feedUrl: feed.xmlUrl,
+        feedUrl,
         websiteUrl: feed.link,
       });
     }
@@ -100,14 +98,17 @@ export default class RefreshPodcastService {
 
       console.log(LOG_TAG, 'Fetching existing episodes.');
 
-      const newPodcastEpisodes: Array<IEpisode> = [];
       const episodes = await this.episodesRepository.findAllByPodcast(
         existingPodcast.id,
       );
 
-      const promiseList: Array<Promise<any>> = [];
+      const createEpisodePromiseList: Array<Promise<any>> = [];
+      const updateEpisodePromiseList: Array<Promise<any>> = [];
 
-      console.log(LOG_TAG, 'Looping feed items.');
+      console.log(
+        LOG_TAG,
+        `Looping feed items. ${episodes.length} episodes found, ${feed.items.length} feed items`,
+      );
 
       // Loop through feed items to create or update episodes
       feed.items.forEach(feedItem => {
@@ -156,12 +157,13 @@ export default class RefreshPodcastService {
             sizeBytes: Number(audioFile.length ?? 0),
           });
 
-          promiseList.push(createEpisodePromise);
+          createEpisodePromiseList.push(createEpisodePromise);
         } else {
           // Update the episode
           existingEpisode.title = feedItem.title;
           existingEpisode.description = feedItem.description;
-          existingEpisode.date = feedItem.date ?? existingEpisode.date;
+          existingEpisode.date =
+            feedItem.date ?? existingEpisode.date ?? new Date();
           existingEpisode.image =
             feedItem.image ?? existingEpisode.image ?? existingPodcast.imageUrl;
           existingEpisode.duration = audioDuration as string;
@@ -169,11 +171,21 @@ export default class RefreshPodcastService {
           existingEpisode.mediaType = audioFile.mediaType ?? 'audio/mpeg';
           existingEpisode.sizeBytes = Number(audioFile.length ?? 0);
 
-          promiseList.push(this.episodesRepository.save(existingEpisode));
+          updateEpisodePromiseList.push(
+            this.episodesRepository.save(existingEpisode),
+          );
         }
       });
 
-      await Promise.all(promiseList);
+      await Promise.all([
+        ...createEpisodePromiseList,
+        ...updateEpisodePromiseList,
+      ]);
+
+      console.log(
+        LOG_TAG,
+        `Added ${createEpisodePromiseList.length} new episodes. Updated ${updateEpisodePromiseList.length} episodes.`,
+      );
 
       console.log(
         LOG_TAG,
@@ -190,18 +202,15 @@ export default class RefreshPodcastService {
 
         updatedEpisode.existsOnFeed = !!feedItem;
 
-        if (feedItem) {
-          updatedEpisode.image = feedItem.image ?? existingPodcast.imageUrl;
-          updatedEpisode.date = feedItem.date ?? new Date();
-          updatedEpisode.description = feedItem.description;
-        }
-
         return updatedEpisode;
       });
 
       await this.episodesRepository.save(...updatedAvailabilityEpisodes);
 
-      console.log(LOG_TAG, `Added ${newPodcastEpisodes.length} new episodes`);
+      console.log(
+        LOG_TAG,
+        `Updated ${updatedAvailabilityEpisodes.length} episodes.`,
+      );
 
       await this.podcastsRepository.save(existingPodcast);
     }

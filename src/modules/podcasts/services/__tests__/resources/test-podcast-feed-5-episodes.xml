@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0"  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+	<title>NerdCast</title>
+	<googleplay:author>Jovem Nerd</googleplay:author>
+	<description>O mundo vira piada no Jovem Nerd</description>
+	<googleplay:image href="https://jovemnerd.com.br/wp-content/themes/jovem-nerd-v8/assets/images/nc-feed.jpg"/>
+	<language>pt-br</language>
+	<link>https://jovemnerd.com.br</link>
+	<atom:link href="https://jovemnerd.com.br/feed-nerdcast/" rel="self" type="application/rss+xml" />
+	<copyright>2002-2021 Jovem Nerd | Pazos e Ottoni LTDA</copyright>
+	<lastBuildDate>Mon, 19 Jul 2021 20:41:19 +0000</lastBuildDate>
+	<itunes:author>Jovem Nerd</itunes:author>
+	<itunes:subtitle>NerdCast</itunes:subtitle>
+	<itunes:summary>O mundo vira piada no Jovem Nerd</itunes:summary>
+	<itunes:category text="Society &amp; Culture" />
+	<itunes:owner>
+		<itunes:name>Jovem Nerd</itunes:name>
+		<itunes:email>feedback@jovemnerd.com.br</itunes:email>
+	</itunes:owner>
+	<itunes:block>no</itunes:block>
+	<itunes:explicit>no</itunes:explicit>
+	<itunes:image href="https://jovemnerd.com.br/wp-content/themes/jovem-nerd-v8/assets/images/nc-feed.jpg"/>
+	<googleplay:category text="Society &amp; Culture"/>
+	<image>
+		<url>https://jovemnerd.com.br/wp-content/themes/jovem-nerd-v8/assets/images/nc-feed.jpg</url>
+		<title>NerdCast</title>
+		<link>https://jovemnerd.com.br</link>
+	</image>
+	<managingEditor>feedback@jovemnerd.com.br (Jovem Nerd)</managingEditor>
+
+			<item>
+				<title>Caneca de Mamicas 11 - Culpa, fome, desespero e calça apertada</title>
+				<link>https://jovemnerd.com.br/nerdcast/caneca-de-mamicas/culpa-fome-desespero-e-calca-apertada/</link>
+				<itunes:summary>Quem nunca tentou começar uma dieta? Vamos ter um papo muito legal com a nutricionista Tina Menna pra falar sobre como perder uns quilinhos, os vários tipos de dieta que conhecemos por aí. O jejum, os tipos de comida e uma das coisas mais importantes que esquecemos, a manutenção do peso.</itunes:summary>
+				<itunes:image href="https://jovemnerd.com.br/wp-content/uploads/2021/07/CDM_11_culpa_desespero_calca_apertada_3000x3000-1.jpg" />
+				<itunes:duration>02:17:00</itunes:duration>
+				<enclosure url="https://nerdcast.jovemnerd.com.br/mamicas_11.mp3" length="8220" type="audio/mpeg"/>
+				<pubDate>Sat, 17 Jul 2021 11:00:26 +0000</pubDate>
+				<guid>https://jovemnerd.com.br/nerdcast/caneca-de-mamicas/culpa-fome-desespero-e-calca-apertada/</guid>
+				<description><![CDATA[Neste podcast: Quem nunca tentou começar uma dieta? Vamos ter um papo muito legal com a nutricionista Tina Menna pra falar sobre como perder uns quilinhos, os vários tipos de dieta que conhecemos por aí. O jejum, os tipos de comida e uma das coisas mais importantes que esquecemos, a manutenção do peso.
+ARTE DA VITRINE: Bianca Nazari
+
+Versão Wallpaper da Vitrine
+CHANCE ÚNICA MAGALU
+
+ 	Acesse para saber mais: https://bit.ly/3kvEWST
+
+LANÇAMENTO DO LIVRO DO GUGA MAFRA - COMO SER UM ROCKSTAR
+
+ 	Vai em ComoSerUmRockstar.com que lá tem links pra uma promoção especial da pré-venda do livro e tudo mais que você precisa saber.
+ 	Corra lá e compre agora na pré-venda!
+
+INSTAGRAM
+
+ 	Tina Menna - tinamenna
+ 	Andreia Pazos - deiaduboc
+ 	Agatha Ottoni - agathaottoni
+ 	Mary Joe - maryjoerodrigue
+ 	@babyrootss
+
+CITADO NO PROGRAMA
+
+ 	https://consultina.regge.com.br/consultas
+ 	https://www.regge.com.br/
+ 	Livro - O poder do Livro - O poder do hábito
+
+E-MAILS
+
+ 	Mande suas histórias, críticas, elogios e sugestões para: canecademamicas@jovemnerd.com.br
+
+EDIÇÃO COMPLETA POR RADIOFOBIA PODCAST E MULTIMÍDIA
+
+ 	http://radiofobia.com.br
+]]></description>
+			</item>
+			<item>
+				<title>NerdCast 786 - Viúva Negra: Casos de família e passagem de bastão</title>
+				<link>https://jovemnerd.com.br/nerdcast/viuva-negra-casos-de-familia-e-passagem-de-bastao/</link>
+				<itunes:summary>Finalmente veio! O filme da Viúva Negra! Vamos comentar sobre os novos personagens, como é a passagem de bastão de uma heroína e se a Natasha merecia mais!</itunes:summary>
+				<itunes:image href="https://jovemnerd.com.br/wp-content/uploads/2021/07/NC_786_viuva-negra_3000x3000.jpg" />
+				<itunes:duration>02:06:01</itunes:duration>
+				<enclosure url="https://nerdcast.jovemnerd.com.br/nerdcast_786_viuva_negra.mp3" length="7561" type="audio/mpeg"/>
+				<pubDate>Fri, 16 Jul 2021 11:00:20 +0000</pubDate>
+				<guid>https://jovemnerd.com.br/nerdcast/viuva-negra-casos-de-familia-e-passagem-de-bastao/</guid>
+				<description><![CDATA[Neste podcast: Finalmente veio! O filme da Viúva Negra! Vamos comentar sobre os novos personagens, como é a passagem de bastão de uma heroína e se a Natasha merecia mais!
+CONTÉM SPOILERS 
+
+ARTE DA VITRINE: Randall Random
+Versão Wallpaper da Vitrine
+
+MUSICDOT
+
+ 	Pra você fã do NerdCast, temos 10% de desconto para se matricular hoje na MusicDot: https://bit.ly/musicdot-jovemnerd-site
+
+NOVO NOTEBOOK ASUS ZENBOOK DUO 14
+
+ 	O ZenBook Duo 14 tem duas telas, é equipado com o novo processador Intel Core i7 de 11ª Geração, que permite você realizar tarefas com velocidade e inteligência inigualáveis, ganhando mais tempo para você
+ 	Acesse: https://bit.ly/2UvdycF
+
+CHANCE ÚNICA MAGALU
+
+ 	Acesse: https://bit.ly/3B6ZaZ2
+
+Financiamento Coletivo Terra Leste
+
+ 	Acesse: https://benfeitoria.com/terraleste
+
+E-MAILS
+
+ 	Mande suas críticas, elogios, sugestões e caneladas para nerdcast@jovemnerd.com.br
+
+EDIÇÃO COMPLETA POR RADIOFOBIA PODCAST E MULTIMÍDIA
+
+ 	http://radiofobia.com.br
+
+PEDIDO DE DOAÇÃO DE SANGUE
+
+ 	Pedido de doação de sangue para Rodrigo Brandão Moura da Silva, no banco de sangue Sérum nas unidades Barra da Tijuca ou Centro do Rio de Janeiro-RJ.
+ 	Pedido de doação de sangue para Larissa Erminia Sugarava Breviglieri, no Hospital Municipal Cármino Caricchio, São Paulo-SP.
+ 	 Pedido de doação de sangue para Divino Alves Barbosa, no Banco de sangue do HGG em Goiânia-GO.
+]]></description>
+			</item>
+			<item>
+				<title>Caneca de Mamicas 10 - O amor não está no mérito</title>
+				<link>https://jovemnerd.com.br/nerdcast/caneca-de-mamicas/o-amor-nao-esta-no-merito/</link>
+				<itunes:summary>Foram vários feedbacks super emocionados de vocês contanto as suas experiências sobre bullying e vamos ler alguns e-mails na companhia da maravilhosa Daniella Freixo. E com leveza e sutileza, vamos abrir espaço para o diálogo para conversar um tema tão importante.</itunes:summary>
+				<itunes:image href="https://jovemnerd.com.br/wp-content/uploads/2021/07/CDM_10_amor_nao_esta_no_merito_3000x3000.jpg" />
+				<itunes:duration>01:02:19</itunes:duration>
+				<enclosure url="https://nerdcast.jovemnerd.com.br/mamicas_10.mp3" length="3739" type="audio/mpeg"/>
+				<pubDate>Sat, 10 Jul 2021 11:00:27 +0000</pubDate>
+				<guid>https://jovemnerd.com.br/nerdcast/caneca-de-mamicas/o-amor-nao-esta-no-merito/</guid>
+				<description><![CDATA[Neste podcast: Foram vários feedbacks super emocionados de vocês contanto as suas experiências sobre bullying e vamos ler alguns e-mails na companhia da maravilhosa Daniella Freixo. E com leveza e sutileza, vamos abrir espaço para o diálogo para conversar um tema tão importante.
+ARTE DA VITRINE: Bianca Nazari
+
+Versão Wallpaper da Vitrine
+CAMBLY
+
+ 	Utilize o cupom CANECA60OFF para ter 60% de desconto e uma aula grátis: https://bit.ly/35ji0gP
+
+INSTAGRAM
+
+ 	Daniella Freixo de Faria Daniella_freixo_de_faria
+ 	Andreia Pazos - deiaduboc
+ 	Agatha Ottoni - agathaottoni
+
+CITADO NO PROGRAMA
+
+ 	Site Educação Infantil Online
+ 	Canal Conversa com Criança 
+ 	Em Busca de Sentido - Viktor Frankl
+ 	 A Coragem de ser Imperfeito - Brené Brown
+ 	Comunicação não-violenta - Marshall Rosenberg
+
+E-MAILS
+
+ 	Mande suas histórias, críticas, elogios e sugestões para: canecademamicas@jovemnerd.com.br
+
+EDIÇÃO COMPLETA POR RADIOFOBIA PODCAST E MULTIMÍDIA
+
+ 	http://radiofobia.com.br
+]]></description>
+			</item>
+			<item>
+				<title>NerdCast 785 - As vantagens, desafios e os macacos do home office</title>
+				<link>https://jovemnerd.com.br/nerdcast/as-vantagens-desafios-e-os-macacos-do-home-office/</link>
+				<itunes:summary>Vamos falar de trabalho remoto, o Home Office! Trouxemos um time curioso que trabalha em diferentes áreas pra saber como foi a experiência de cada um com o home office.</itunes:summary>
+				<itunes:image href="https://jovemnerd.com.br/wp-content/uploads/2021/07/NC_785_homeoffice_3000x3000.jpg" />
+				<itunes:duration>01:40:20</itunes:duration>
+				<enclosure url="https://nerdcast.jovemnerd.com.br/nerdcast_785_homeoffice.mp3" length="6020" type="audio/mpeg"/>
+				<pubDate>Fri, 09 Jul 2021 11:11:07 +0000</pubDate>
+				<guid>https://jovemnerd.com.br/nerdcast/as-vantagens-desafios-e-os-macacos-do-home-office/</guid>
+				<description><![CDATA[Neste podcast:  Vamos falar de trabalho remoto, o Home Office! Trouxemos um time curioso que trabalha em diferentes áreas pra saber como foi a experiência de cada um com o home office.
+
+ARTE DA VITRINE: Randall Random
+Versão Wallpaper da Vitrine
+
+SOLIDWORKS
+
+ 	Acesse: https://rebrand.ly/77z59rm
+
+PRAVALER – FINANCIAMENTO UNIVERSITÁRIO
+
+ 	O Pravaler é uma fintech que oferece financiamento estudantil para quem quer fazer faculdade sem que esse investimento pese no bolso;
+ 	Para tirar dúvidas ou contratar, é só enviar uma mensagem para o número (11) 3003-3991, com a #NERD ou acessar: https://bit.ly/3Auhqvg
+
+NOVO NOTEBOOK ASUS ZENBOOK DUO 14
+
+ 	O ZenBook Duo 14 tem duas telas, é equipado com o novo processador Intel Core i7 de 11ª Geração, que permite você realizar tarefas com velocidade e inteligência inigualáveis, ganhando mais tempo para você
+ 	Acesse: https://bit.ly/2UvdycF
+
+NOVA FUTURA
+
+ 	Abertura de conta com o Jovem Nerd: https://bit.ly/3q1me4C
+ 	Invista no Carteira Recomendada: https://www.novafutura.com.br/acoes-recomendacoes/
+ 	Site da nova Futura: http://bit.ly/2Lor4oL
+ 	Spotify: https://spoti.fi/3f82s2q
+ 	Youtube: http://bit.ly/2LsKUzk
+ 	Instagram: http://bit.ly/2sBKbod
+ 	Facebook: http://bit.ly/2JehoQV
+ 	Twitter: http://bit.ly/2qBKDlj
+
+NERDCASH
+
+ 	NerdCast extra toda segunda sexta do mês!
+ 	NerdCash 37 - Entendendo fundos de investimento: https://bit.ly/3hX3a5P
+
+OUÇA TAMBÉM: CANECAS DE MAMICAS 09
+
+ 	Todos contra o bullying
+
+E-MAILS
+
+ 	Mande suas críticas, elogios, sugestões e caneladas para nerdcast@jovemnerd.com.br
+
+EDIÇÃO COMPLETA POR RADIOFOBIA PODCAST E MULTIMÍDIA
+
+ 	http://radiofobia.com.br
+
+CITADOS NO PROGRAMA
+
+ 	Termo Geugy
+
+PEDIDO DE DOAÇÃO DE SANGUE
+
+ 	Pedido de doação de sangue para Robson do Carmo Rocha, no Hospital Eduardo de Menezes, em Belo Horizonte - MG.
+ 	Pedido de doação de sangue para Rodrigo Brandão Moura da Silva, no Sérum das unidades Barra da Tijuca ou Centro do Rio de Janeiro – RJ.
+]]></description>
+			</item>
+			<item>
+				<title>NerdCash 37 - Entendendo fundos de investimento</title>
+				<link>https://jovemnerd.com.br/nerdcast/nerdcash/entendendo-fundos-de-investimento/</link>
+				<itunes:summary>Vamos abrir mais uma vez uma janela de conhecimento para quem está começando, um papo sobre fundos de investimentos. O conceito, os profissionais dedicados aos investimentos, os tipos de fundos e outras informações que você precisa saber pra começar a investir.</itunes:summary>
+				<itunes:image href="https://jovemnerd.com.br/wp-content/uploads/2021/07/NC_CASH37-fundos-de-investimento_3000x3000.jpg" />
+				<itunes:duration>00:45:35</itunes:duration>
+				<enclosure url="https://nerdcast.jovemnerd.com.br/nerdcash_37.mp3" length="2735" type="audio/mpeg"/>
+				<pubDate>Fri, 09 Jul 2021 11:10:05 +0000</pubDate>
+				<guid>https://jovemnerd.com.br/nerdcast/nerdcash/entendendo-fundos-de-investimento/</guid>
+				<description><![CDATA[Neste podcast:  Vamos abrir mais uma vez uma janela de conhecimento para quem está começando, um papo sobre fundos de investimentos. O conceito, os profissionais dedicados aos investimentos, os tipos de fundos e outras informações que você precisa saber pra começar a investir.
+ARTE DA VITRINE: Randall Random
+NOVA FUTURA
+
+ 	Abertura de conta com o Jovem Nerd: https://bit.ly/3q1me4C
+ 	Site da nova Futura: http://bit.ly/2Lor4oL
+ 	Youtube: http://bit.ly/2LsKUzk
+ 	Instagram: http://bit.ly/2sBKbod
+ 	Facebook: http://bit.ly/2JehoQV
+ 	Twitter: http://bit.ly/2qBKDlj
+
+OUÇA TAMBÉM
+
+ 	Playlist completa NerdCash: https://bit.ly/2Ndl5s7
+ 	Ouça também NerdCash 36  
+
+E-MAILS
+
+ 	Mande suas críticas, elogios, sugestões e caneladas para nerdcast@jovemnerd.com.br
+
+EDIÇÃO COMPLETA POR RADIOFOBIA PODCAST E MULTIMÍDIA
+
+ 	http://radiofobia.com.br
+]]></description>
+			</item>
+</channel>
+</rss>
